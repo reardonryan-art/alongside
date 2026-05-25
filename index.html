@@ -2227,12 +2227,59 @@ async function startListeningMic() {
     return;
   }
 
-  // Connect to AssemblyAI v3 with token - minimal params
+  // Connect WebSocket FIRST before setting up audio
   const wsUrl = `wss://streaming.assemblyai.com/v3/ws?token=${token}&sample_rate=16000&encoding=pcm_s16le`;
   aaiSocket = new WebSocket(wsUrl);
 
-  aaiSocket.onopen = () => {
+  aaiSocket.onopen = async () => {
+    console.log('AAI WebSocket OPEN — setting up audio pipeline');
     document.getElementById('listen-status').textContent = 'Listening to Noa…';
+
+    // Now set up audio AFTER connection is confirmed open
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+      const source = audioContext.createMediaStreamSource(mediaStream);
+
+      const workletCode = `
+        class PCMProcessor extends AudioWorkletProcessor {
+          process(inputs) {
+            const input = inputs[0];
+            if (input && input[0]) {
+              const float32 = input[0];
+              const int16 = new Int16Array(float32.length);
+              for (let i = 0; i < float32.length; i++) {
+                int16[i] = Math.max(-32768, Math.min(32767, Math.round(float32[i] * 32767)));
+              }
+              this.port.postMessage(int16.buffer, [int16.buffer]);
+            }
+            return true;
+          }
+        }
+        registerProcessor('pcm-processor', PCMProcessor);
+      `;
+      const blob = new Blob([workletCode], { type: 'application/javascript' });
+      const workletUrl = URL.createObjectURL(blob);
+      await audioContext.audioWorklet.addModule(workletUrl);
+      const workletNode = new AudioWorkletNode(audioContext, 'pcm-processor');
+
+      workletNode.port.onmessage = (e) => {
+        if (aaiSocket?.readyState === WebSocket.OPEN) {
+          aaiSocket.send(e.data);
+          const int16 = new Int16Array(e.data);
+          let sum = 0;
+          for (let i = 0; i < int16.length; i++) sum += Math.abs(int16[i]);
+          const rms = sum / int16.length / 32768;
+          animateWaveFromLevel(rms);
+        }
+      };
+
+      source.connect(workletNode);
+      workletNode.connect(audioContext.destination);
+      processorNode = workletNode;
+      console.log('Audio pipeline ready — streaming to AssemblyAI');
+    } catch(err) {
+      console.error('Audio setup error:', err);
+    }
   };
 
   aaiSocket.onmessage = (msg) => {
@@ -2242,7 +2289,6 @@ async function startListeningMic() {
 
   aaiSocket.onerror = (err) => {
     console.error('AssemblyAI WS error:', err);
-    // Graceful fallback message
     document.getElementById('listen-status').textContent = 'Connection issue — retrying…';
     setTimeout(() => { if (isListening) startListeningMic(); }, 2000);
   };
@@ -2253,53 +2299,7 @@ async function startListeningMic() {
       document.getElementById('listen-status').textContent = 'Connection issue — retrying…';
       setTimeout(() => { if (isListening) startListeningMic(); }, 2000);
     }
-  };
-
-  // Step 3: set up Web Audio pipeline using AudioWorklet (modern, not deprecated)
-  audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-  const source = audioContext.createMediaStreamSource(mediaStream);
-
-  // Define the AudioWorklet processor inline as a blob
-  const workletCode = `
-    class PCMProcessor extends AudioWorkletProcessor {
-      process(inputs) {
-        const input = inputs[0];
-        if (input && input[0]) {
-          const float32 = input[0];
-          const int16 = new Int16Array(float32.length);
-          for (let i = 0; i < float32.length; i++) {
-            int16[i] = Math.max(-32768, Math.min(32767, Math.round(float32[i] * 32767)));
-          }
-          this.port.postMessage(int16.buffer, [int16.buffer]);
-        }
-        return true;
-      }
-    }
-    registerProcessor('pcm-processor', PCMProcessor);
-  `;
-
-  const blob = new Blob([workletCode], { type: 'application/javascript' });
-  const workletUrl = URL.createObjectURL(blob);
-
-  await audioContext.audioWorklet.addModule(workletUrl);
-  const workletNode = new AudioWorkletNode(audioContext, 'pcm-processor');
-
-  workletNode.port.onmessage = (e) => {
-    if (aaiSocket?.readyState === WebSocket.OPEN) {
-      // v3 accepts raw PCM binary
-      aaiSocket.send(e.data);
-      // Animate waveform
-      const int16 = new Int16Array(e.data);
-      let sum = 0;
-      for (let i = 0; i < int16.length; i++) sum += Math.abs(int16[i]);
-      const rms = sum / int16.length / 32768;
-      animateWaveFromLevel(rms);
-    }
-  };
-
-  source.connect(workletNode);
-  workletNode.connect(audioContext.destination);
-  processorNode = workletNode; // store for cleanup
+  }; // store for cleanup
 
   isListening = true;
   document.getElementById('pulse-wrap').classList.add('listening');
