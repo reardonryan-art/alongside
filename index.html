@@ -2243,29 +2243,50 @@ async function startListeningMic() {
     }
   };
 
-  // Step 3: set up Web Audio pipeline to capture + stream PCM
+  // Step 3: set up Web Audio pipeline using AudioWorklet (modern, not deprecated)
   audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
   const source = audioContext.createMediaStreamSource(mediaStream);
 
-  // ScriptProcessorNode captures raw PCM frames
-  processorNode = audioContext.createScriptProcessor(4096, 1, 1);
-  processorNode.onaudioprocess = (e) => {
-    if (aaiSocket?.readyState !== WebSocket.OPEN) return;
-    const float32 = e.inputBuffer.getChannelData(0);
-    // Convert Float32 PCM → Int16 PCM
-    const int16 = new Int16Array(float32.length);
-    for (let i = 0; i < float32.length; i++) {
-      int16[i] = Math.max(-32768, Math.min(32767, float32[i] * 32768));
+  // Define the AudioWorklet processor inline as a blob
+  const workletCode = `
+    class PCMProcessor extends AudioWorkletProcessor {
+      process(inputs) {
+        const input = inputs[0];
+        if (input && input[0]) {
+          const float32 = input[0];
+          const int16 = new Int16Array(float32.length);
+          for (let i = 0; i < float32.length; i++) {
+            int16[i] = Math.max(-32768, Math.min(32767, Math.round(float32[i] * 32767)));
+          }
+          this.port.postMessage(int16.buffer, [int16.buffer]);
+        }
+        return true;
+      }
     }
-    // v3 accepts raw binary audio data
-    aaiSocket.send(int16.buffer);
-    // Animate waveform from real audio levels
-    const rms = Math.sqrt(float32.reduce((s, v) => s + v*v, 0) / float32.length);
-    animateWaveFromLevel(rms);
+    registerProcessor('pcm-processor', PCMProcessor);
+  `;
+
+  const blob = new Blob([workletCode], { type: 'application/javascript' });
+  const workletUrl = URL.createObjectURL(blob);
+
+  await audioContext.audioWorklet.addModule(workletUrl);
+  const workletNode = new AudioWorkletNode(audioContext, 'pcm-processor');
+
+  workletNode.port.onmessage = (e) => {
+    if (aaiSocket?.readyState === WebSocket.OPEN) {
+      aaiSocket.send(e.data);
+      // Animate waveform from buffer
+      const int16 = new Int16Array(e.data);
+      let sum = 0;
+      for (let i = 0; i < int16.length; i++) sum += Math.abs(int16[i]);
+      const rms = sum / int16.length / 32768;
+      animateWaveFromLevel(rms);
+    }
   };
 
-  source.connect(processorNode);
-  processorNode.connect(audioContext.destination);
+  source.connect(workletNode);
+  workletNode.connect(audioContext.destination);
+  processorNode = workletNode; // store for cleanup
 
   isListening = true;
   document.getElementById('pulse-wrap').classList.add('listening');
