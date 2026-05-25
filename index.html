@@ -2208,25 +2208,27 @@ async function startListeningMic() {
     return;
   }
 
-  // Get temporary token from AssemblyAI v3 token endpoint
+  // Get temporary token via Cloudflare Worker proxy (avoids CORS)
   let token = null;
   try {
-    const res = await fetch('https://streaming.assemblyai.com/v3/token', {
-      method: 'POST',
-      headers: { 'Authorization': AAIKEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ expires_in: 3600 })
+    const res = await fetch('https://orange-mouse-0c29.reardon-ryan.workers.dev/', {
+      method: 'POST'
     });
-    if (res.ok) {
-      const json = await res.json();
-      token = json.token;
-    }
-  } catch(e) {}
+    const json = await res.json();
+    token = json.token;
+    console.log('Got AAI token:', token ? 'yes' : 'no');
+  } catch(e) {
+    console.error('Token fetch failed:', e);
+  }
 
-  // Connect with token in query param (required for browser - can't set headers)
-  const wsUrl = token
-    ? `wss://streaming.assemblyai.com/v3/ws?speech_model=universal-streaming-english&sample_rate=16000&encoding=pcm_s16le&token=${token}`
-    : `wss://streaming.assemblyai.com/v3/ws?speech_model=universal-streaming-english&sample_rate=16000&encoding=pcm_s16le&token=${AAIKEY}`;
+  if (!token) {
+    document.getElementById('listen-status').textContent = 'Connection failed — try again';
+    isListening = false;
+    return;
+  }
 
+  // Connect to AssemblyAI v3 with token
+  const wsUrl = `wss://streaming.assemblyai.com/v3/ws?speech_model=universal-streaming-english&sample_rate=16000&encoding=pcm_s16le&token=${token}`;
   aaiSocket = new WebSocket(wsUrl);
 
   aaiSocket.onopen = () => {
