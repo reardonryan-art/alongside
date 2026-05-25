@@ -2228,7 +2228,7 @@ async function startListeningMic() {
   }
 
   // Connect WebSocket FIRST before setting up audio
-  const wsUrl = `wss://streaming.assemblyai.com/v3/ws?token=${token}&sample_rate=16000&encoding=pcm_s16le`;
+  const wsUrl = `wss://streaming.assemblyai.com/v3/ws?token=${token}&sample_rate=16000&encoding=pcm_s16le&format_turns=true`;
   aaiSocket = new WebSocket(wsUrl);
 
   aaiSocket.onopen = async () => {
@@ -2237,20 +2237,34 @@ async function startListeningMic() {
 
     // Now set up audio AFTER connection is confirmed open
     try {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+      // Use browser's native sample rate, then resample to 16kHz for AssemblyAI
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const nativeSampleRate = audioContext.sampleRate;
+      console.log('Native sample rate:', nativeSampleRate);
+
       const source = audioContext.createMediaStreamSource(mediaStream);
 
       const workletCode = `
         class PCMProcessor extends AudioWorkletProcessor {
+          constructor() {
+            super();
+            this.buffer = [];
+            this.inputSampleRate = sampleRate; // native browser rate
+            this.outputSampleRate = 16000;
+            this.ratio = this.inputSampleRate / this.outputSampleRate;
+          }
           process(inputs) {
             const input = inputs[0];
             if (input && input[0]) {
               const float32 = input[0];
-              const int16 = new Int16Array(float32.length);
-              for (let i = 0; i < float32.length; i++) {
-                int16[i] = Math.max(-32768, Math.min(32767, Math.round(float32[i] * 32767)));
+              // Downsample to 16kHz
+              const outputLength = Math.ceil(float32.length / this.ratio);
+              const output = new Int16Array(outputLength);
+              for (let i = 0; i < outputLength; i++) {
+                const srcIdx = Math.min(Math.floor(i * this.ratio), float32.length - 1);
+                output[i] = Math.max(-32768, Math.min(32767, Math.round(float32[srcIdx] * 32767)));
               }
-              this.port.postMessage(int16.buffer, [int16.buffer]);
+              this.port.postMessage(output.buffer, [output.buffer]);
             }
             return true;
           }
