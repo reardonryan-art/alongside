@@ -2208,9 +2208,25 @@ async function startListeningMic() {
     return;
   }
 
-  // Connect directly to AssemblyAI v2 real-time WebSocket
-  // Pass API key as token param — works from browser without CORS issues
-  const wsUrl = `wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000&token=${AAIKEY}`;
+  // Get temporary token from AssemblyAI v3 token endpoint
+  let token = null;
+  try {
+    const res = await fetch('https://streaming.assemblyai.com/v3/token', {
+      method: 'POST',
+      headers: { 'Authorization': AAIKEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ expires_in: 3600 })
+    });
+    if (res.ok) {
+      const json = await res.json();
+      token = json.token;
+    }
+  } catch(e) {}
+
+  // Connect with token in query param (required for browser - can't set headers)
+  const wsUrl = token
+    ? `wss://streaming.assemblyai.com/v3/ws?speech_model=universal-streaming-english&sample_rate=16000&encoding=pcm_s16le&token=${token}`
+    : `wss://streaming.assemblyai.com/v3/ws?speech_model=universal-streaming-english&sample_rate=16000&encoding=pcm_s16le&token=${AAIKEY}`;
+
   aaiSocket = new WebSocket(wsUrl);
 
   aaiSocket.onopen = () => {
@@ -2267,11 +2283,8 @@ async function startListeningMic() {
 
   workletNode.port.onmessage = (e) => {
     if (aaiSocket?.readyState === WebSocket.OPEN) {
-      // v2 requires base64-encoded audio_data in JSON
-      const bytes = new Uint8Array(e.data);
-      let binary = '';
-      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-      aaiSocket.send(JSON.stringify({ audio_data: btoa(binary) }));
+      // v3 accepts raw PCM binary
+      aaiSocket.send(e.data);
       // Animate waveform
       const int16 = new Int16Array(e.data);
       let sum = 0;
