@@ -2227,8 +2227,8 @@ async function startListeningMic() {
     return;
   }
 
-  // Connect to AssemblyAI v3 with token
-  const wsUrl = `wss://streaming.assemblyai.com/v3/ws?speech_model=universal-streaming-english&sample_rate=16000&encoding=pcm_s16le&token=${token}`;
+  // Connect to AssemblyAI v3 with token - minimal params
+  const wsUrl = `wss://streaming.assemblyai.com/v3/ws?token=${token}&sample_rate=16000&encoding=pcm_s16le`;
   aaiSocket = new WebSocket(wsUrl);
 
   aaiSocket.onopen = () => {
@@ -2247,10 +2247,11 @@ async function startListeningMic() {
     setTimeout(() => { if (isListening) startListeningMic(); }, 2000);
   };
 
-  aaiSocket.onclose = () => {
+  aaiSocket.onclose = (e) => {
+    console.log('AAI WS closed:', e.code, e.reason);
     if (isListening) {
-      // Auto-reconnect
-      setTimeout(() => { if (isListening) startListeningMic(); }, 1000);
+      document.getElementById('listen-status').textContent = 'Connection issue — retrying…';
+      setTimeout(() => { if (isListening) startListeningMic(); }, 2000);
     }
   };
 
