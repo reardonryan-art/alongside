@@ -2212,11 +2212,11 @@ async function startListeningMic() {
   let token = null;
   try {
     const res = await fetch('https://orange-mouse-0c29.reardon-ryan.workers.dev/', {
-      method: 'POST'
+      method: 'GET'
     });
     const json = await res.json();
     token = json.token;
-    console.log('Got AAI token:', token ? 'yes' : 'no');
+    console.log('Got AAI token:', token ? 'yes' : 'no', token ? token.substring(0,20)+'...' : '');
   } catch(e) {
     console.error('Token fetch failed:', e);
   }
