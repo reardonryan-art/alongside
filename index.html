@@ -2208,26 +2208,9 @@ async function startListeningMic() {
     return;
   }
 
-  // Get a temporary token from AssemblyAI first
-  // This is required for browser-based connections
-  let token = null;
-  try {
-    const res = await fetch('https://api.assemblyai.com/v2/realtime/token', {
-      method: 'POST',
-      headers: { 'authorization': AAIKEY, 'content-type': 'application/json' },
-      body: JSON.stringify({ expires_in: 3600 })
-    });
-    const json = await res.json();
-    token = json.token;
-  } catch(e) {
-    console.error('Token fetch failed:', e);
-  }
-
-  // Connect with token (v2 endpoint still works for browser auth)
-  const wsUrl = token
-    ? `wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000&token=${token}`
-    : `wss://streaming.assemblyai.com/v3/ws?sample_rate=16000&encoding=pcm_s16le&token=${AAIKEY}`;
-
+  // Connect directly to AssemblyAI v2 real-time WebSocket
+  // Pass API key as token param — works from browser without CORS issues
+  const wsUrl = `wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000&token=${AAIKEY}`;
   aaiSocket = new WebSocket(wsUrl);
 
   aaiSocket.onopen = () => {
@@ -2284,17 +2267,11 @@ async function startListeningMic() {
 
   workletNode.port.onmessage = (e) => {
     if (aaiSocket?.readyState === WebSocket.OPEN) {
-      // v2 needs base64, v3 needs raw bytes — send both ways gracefully
-      try {
-        // Try raw binary first (v3)
-        aaiSocket.send(e.data);
-      } catch(err) {
-        // Fall back to base64 (v2)
-        const bytes = new Uint8Array(e.data);
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-        aaiSocket.send(JSON.stringify({ audio_data: btoa(binary) }));
-      }
+      // v2 requires base64-encoded audio_data in JSON
+      const bytes = new Uint8Array(e.data);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      aaiSocket.send(JSON.stringify({ audio_data: btoa(binary) }));
       // Animate waveform
       const int16 = new Int16Array(e.data);
       let sum = 0;
