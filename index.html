@@ -1,44 +1,2746 @@
-9:41
-📶
-🔋
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Alongside — Your child's reading coach</title>
+<style>
+  :root {
+    --teal-50: #E1F5EE;
+    --teal-100: #9FE1CB;
+    --teal-400: #1D9E75;
+    --teal-600: #0F6E56;
+    --teal-800: #085041;
+    --amber-50: #FAEEDA;
+    --amber-100: #FAC775;
+    --amber-400: #EF9F27;
+    --amber-600: #854F0B;
+    --amber-800: #633806;
+    --purple-50: #EEEDFE;
+    --purple-400: #7F77DD;
+    --purple-600: #534AB7;
+    --purple-800: #3C3489;
+    --blue-50: #E6F1FB;
+    --blue-100: #B5D4F4;
+    --blue-600: #185FA5;
+    --blue-800: #0C447C;
+    --red-50: #FCEBEB;
+    --red-100: #F7C1C1;
+    --red-600: #A32D2D;
+    --green-50: #EAF3DE;
+    --green-400: #639922;
+    --green-600: #3B6D11;
+    --gray-100: #F1EFE8;
+    --gray-200: #D3D1C7;
+    --gray-400: #888780;
+    --gray-600: #5F5E5A;
+  }
 
-Alongside
-Your child's reading coach, in your pocket
-⚙️
-N
-Noa, age 7
-Grade 2
-🔥 6
-DAY STREAK
-THIS WEEK
-4
-Sessions
-↑ Goal: 5
-81%
-Accuracy
-↑ +4% this week
-🎙️
-Start reading session
-CONTINUE READING
-Browse library ›
-🦒
-Giraffes Can't Dance
-Giles Andreae · Level K · Ages 5–8
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-Change ›
-RECENT SESSIONS
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #F7F6F2;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
 
-Giraffes Can’t Dance — 12 min, 2 coaching moments
-Yesterday · 8:12pm
+  .app {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
 
-Giraffes Can’t Dance — hesitation on “waltzing”, vowel team cue worked
-2 days ago · 7:45pm
-🏠
-Home
-📚
-Library
-🧠
-Learn
-📊
-Profile
+  /* STATUS BAR */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px 6px;
+    background: #fff;
+  }
+  .status-time { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .status-icons { display: flex; gap: 6px; align-items: center; font-size: 14px; color: #1a1a1a; }
 
+  /* NAV */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px 14px;
+    background: #fff;
+    border-bottom: 1px solid #f0ede8;
+  }
+  .nav-title { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #F1EFE8; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #5F5E5A;
+  }
+  .nav-btn:active { background: #E3E1DA; }
+
+  /* SCREENS */
+  .screen { display: none; flex-direction: column; flex: 1; }
+  .screen.active { display: flex; }
+
+  /* HOME SCREEN */
+  .home-content { padding: 20px 16px; flex: 1; overflow-y: auto; }
+
+  .child-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--teal-50); border-radius: 16px;
+    padding: 14px; margin-bottom: 20px;
+  }
+  .avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--teal-400); display: flex; align-items: center;
+    justify-content: center; font-size: 20px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .child-name { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+  .child-sub { font-size: 13px; color: var(--teal-600); margin-top: 2px; }
+  .streak { margin-left: auto; text-align: center; }
+  .streak-num { font-size: 22px; font-weight: 700; color: var(--teal-600); }
+  .streak-label { font-size: 10px; color: var(--teal-600); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .section-label {
+    font-size: 11px; font-weight: 600; color: #888780;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .stat-card {
+    background: #F7F6F2; border-radius: 12px; padding: 14px;
+  }
+  .stat-val { font-size: 26px; font-weight: 700; color: #1a1a1a; }
+  .stat-label { font-size: 12px; color: #888780; margin-top: 2px; }
+  .stat-delta { font-size: 11px; color: var(--teal-400); margin-top: 3px; }
+
+  .start-btn {
+    width: 100%; padding: 18px; border-radius: 16px;
+    background: var(--teal-600); border: none; cursor: pointer;
+    font-size: 17px; font-weight: 600; color: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 14px; transition: background 0.15s;
+  }
+  .start-btn:active { background: var(--teal-800); }
+  .start-btn-icon { font-size: 22px; }
+
+  .log-card {
+    background: #F7F6F2; border-radius: 14px; padding: 14px; margin-bottom: 10px;
+  }
+  .log-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .log-row:last-child { margin-bottom: 0; }
+  .log-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .log-text { font-size: 13px; color: #3a3a3a; line-height: 1.4; flex: 1; }
+  .log-time { font-size: 11px; color: #888780; margin-top: 2px; }
+
+  /* SESSION SCREEN */
+  .session-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .listening-hero {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 28px 20px 20px; flex: 1;
+  }
+
+  .pulse-wrap { position: relative; margin-bottom: 16px; }
+  .pulse-ring {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: var(--teal-50); display: flex;
+    align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .pulse-ring.active { background: var(--teal-50); }
+  .pulse-ring svg { width: 40px; height: 40px; }
+  .ring1, .ring2 {
+    position: absolute; border-radius: 50%;
+    border: 2px solid var(--teal-100);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    display: none;
+  }
+  .ring1 { width: 120px; height: 120px; }
+  .ring2 { width: 148px; height: 148px; opacity: 0.4; }
+  .listening .ring1, .listening .ring2 { display: block; animation: ripple 2s ease-in-out infinite; }
+  .listening .ring2 { animation-delay: 0.4s; }
+  @keyframes ripple {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.08); opacity: 0.2; }
+  }
+
+  .listen-status { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
+  .listen-sub { font-size: 14px; color: #888780; text-align: center; line-height: 1.5; margin-bottom: 20px; }
+
+  .waveform {
+    display: flex; align-items: center; gap: 3px;
+    height: 40px; margin-bottom: 20px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .waveform.active { opacity: 1; }
+  .wave-bar {
+    width: 4px; border-radius: 2px; background: var(--teal-100);
+    height: 4px; transition: height 0.1s;
+  }
+
+  .transcript-box {
+    width: 100%; background: #F7F6F2; border-radius: 14px;
+    padding: 14px; min-height: 80px; margin-bottom: 16px;
+    font-size: 15px; color: #3a3a3a; line-height: 1.7;
+  }
+  .transcript-word { display: inline; }
+  .transcript-word.flagged {
+    background: var(--amber-50); color: var(--amber-600);
+    border-radius: 4px; padding: 1px 3px;
+    text-decoration: underline wavy var(--amber-400);
+  }
+  .transcript-placeholder { color: #B4B2A9; font-size: 14px; }
+
+  .session-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px; margin-bottom: 12px;
+  }
+  .meta-book { font-size: 13px; color: #888780; }
+  .meta-timer { font-size: 13px; color: #888780; display: flex; align-items: center; gap: 5px; }
+
+  .session-controls { padding: 12px 16px 16px; display: flex; gap: 10px; }
+  .ctrl-btn {
+    flex: 1; padding: 14px; border-radius: 14px; border: none;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: all 0.15s;
+  }
+  .ctrl-btn:active { transform: scale(0.97); }
+  .ctrl-start { background: var(--teal-600); color: #fff; }
+  .ctrl-start:active { background: var(--teal-800); }
+  .ctrl-stop { background: var(--red-50); color: var(--red-600); border: 1px solid var(--red-100); }
+  .ctrl-manual { background: var(--amber-50); color: var(--amber-600); border: 1px solid var(--amber-100); flex: 0 0 auto; padding: 14px 16px; }
+
+  /* ── ERROR COACHING SCREEN ───────────────────────────────────── */
+  .error-overlay {
+    position: absolute; inset: 0; background: #fff;
+    display: none; flex-direction: column;
+    z-index: 100; overflow-y: auto;
+  }
+  .error-overlay.open { display: flex; animation: fadeIn 0.18s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .error-screen { display: flex; flex-direction: column; padding: 0 0 32px; min-height: 100%; }
+
+  .error-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 12px; border-bottom: 1px solid #F0EDE8;
+  }
+  .error-header-label { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+  .error-close {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #F1EFE8; border: none; cursor: pointer;
+    font-size: 14px; color: #5F5E5A;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .error-words-row {
+    display: flex; align-items: center; gap: 16px;
+    padding: 24px 20px; background: #FAFAF8; border-bottom: 1px solid #F0EDE8;
+  }
+  .error-word-col { flex: 1; }
+  .error-word-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #888780; margin-bottom: 8px;
+  }
+  .error-word { font-size: 32px; font-weight: 700; line-height: 1; }
+  .error-word.target { color: #1a1a1a; }
+  .error-word.said { color: #E24B4A; }
+  .error-arrow { font-size: 20px; color: #B4B2A9; flex-shrink: 0; }
+
+  .error-pattern-box {
+    margin: 16px 20px; background: #F7F6F2; border-radius: 14px; padding: 14px;
+  }
+  .error-pattern-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #888780; margin-bottom: 6px;
+  }
+  .error-pattern-name { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+
+  .error-section { padding: 0 20px 16px; }
+  .error-section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #888780; margin-bottom: 10px;
+  }
+  .error-means-list { display: flex; flex-direction: column; gap: 7px; }
+  .error-means-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 14px; color: #3a3a3a; line-height: 1.5;
+  }
+  .error-means-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #B4B2A9; margin-top: 6px; flex-shrink: 0;
+  }
+
+  .error-say-box {
+    margin: 0 20px 16px; background: var(--teal-50); border-radius: 14px; padding: 16px;
+  }
+  .error-say-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--teal-600); margin-bottom: 8px;
+  }
+  .error-say-text { font-size: 19px; font-weight: 600; font-style: italic; color: #085041; line-height: 1.45; }
+
+  .error-teaching {
+    margin: 0 20px 16px; padding: 16px; background: #F7F6F2; border-radius: 14px;
+  }
+  .error-teaching-text { font-size: 14px; color: #3a3a3a; line-height: 1.6; margin-bottom: 12px; }
+
+  .error-practice { padding: 0 20px 16px; }
+  .error-practice-words { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .practice-word {
+    background: #F7F6F2; border-radius: 8px; padding: 6px 14px;
+    font-size: 15px; font-weight: 500; color: #3a3a3a;
+  }
+
+  .error-actions { padding: 8px 20px 0; display: flex; flex-direction: column; gap: 10px; }
+  .error-btn-continue {
+    width: 100%; padding: 16px; border-radius: 14px;
+    background: var(--teal-600); border: none; color: #fff;
+    font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: background 0.15s;
+  }
+  .error-btn-continue:active { background: var(--teal-800); }
+  .error-btn-more {
+    width: 100%; padding: 13px; border-radius: 14px;
+    background: transparent; border: 1.5px solid #E8E6DF;
+    font-size: 14px; font-weight: 500; color: #5F5E5A;
+    cursor: pointer; font-family: inherit;
+  }
+  .error-btn-more:active { background: #F7F6F2; }
+
+  /* LOADING INDICATOR */
+  .loading-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 0; color: #888780; font-size: 13px;
+    display: none;
+  }
+  .loading-row.active { display: flex; }
+  .spinner {
+    width: 16px; height: 16px; border: 2px solid #D3D1C7;
+    border-top-color: var(--teal-400); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  /* TAB BAR */
+  .tab-bar {
+    display: flex; border-top: 1px solid #f0ede8;
+    background: #fff; padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .tab {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; padding: 10px 0 12px; gap: 3px; cursor: pointer;
+  }
+  .tab-icon { font-size: 22px; color: #B4B2A9; }
+  .tab.active .tab-icon { color: var(--teal-600); }
+  .tab-label { font-size: 10px; color: #B4B2A9; }
+  .tab.active .tab-label { color: var(--teal-600); }
+
+  /* COMPREHENSION CHECKPOINT SHEET */
+  .cp-sheet-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+    display: none; align-items: flex-end;
+    z-index: 110;
+  }
+  .cp-sheet-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+  .cp-sheet {
+    width: 100%; background: #fff;
+    border-radius: 24px 24px 0 0;
+    padding: 20px 20px 36px;
+    animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 88vh; overflow-y: auto;
+  }
+
+  .cp-handle { width: 36px; height: 4px; border-radius: 2px; background: #D3D1C7; margin: 0 auto 20px; }
+
+  .cp-header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .cp-type-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--blue-50); display: flex; align-items: center;
+    justify-content: center; font-size: 22px; flex-shrink: 0;
+  }
+  .cp-header-title { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .cp-header-sub { font-size: 12px; color: #888780; margin-top: 2px; }
+
+  .cp-pause-hint {
+    background: var(--blue-50); border-radius: 12px; padding: 12px 14px;
+    font-size: 13px; color: var(--blue-600); line-height: 1.5; margin-bottom: 16px;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .cp-pause-hint-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .cp-question-box {
+    background: #F7F6F2; border-radius: 14px; padding: 16px;
+    margin-bottom: 14px;
+  }
+  .cp-q-eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--blue-600); margin-bottom: 6px;
+  }
+  .cp-q-text { font-size: 19px; font-weight: 600; font-style: italic; color: #1a1a1a; line-height: 1.45; }
+
+  .cp-answers-label {
+    font-size: 11px; font-weight: 600; color: #888780;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .cp-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .cp-option {
+    padding: 14px; border-radius: 14px;
+    border: 1.5px solid #E8E6DF; background: #fff;
+    font-size: 15px; color: #1a1a1a; cursor: pointer;
+    text-align: left; font-family: inherit;
+    transition: all 0.15s; line-height: 1.4;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .cp-option:active { transform: scale(0.98); }
+  .cp-option.correct {
+    background: var(--green-50); border-color: #97C459; color: var(--green-600);
+  }
+  .cp-option.incorrect {
+    background: var(--red-50); border-color: var(--red-100); color: var(--red-600);
+  }
+  .cp-option.correct::before { content: '✓'; font-weight: 700; flex-shrink: 0; }
+  .cp-option.incorrect::before { content: '✗'; font-weight: 700; flex-shrink: 0; }
+
+  .cp-feedback-box {
+    border-radius: 14px; padding: 14px; margin-bottom: 14px;
+    display: none;
+  }
+  .cp-feedback-box.visible { display: block; }
+  .cp-feedback-box.strong { background: var(--green-50); border: 1px solid #97C459; }
+  .cp-feedback-box.developing { background: var(--amber-50); border: 1px solid var(--amber-100); }
+  .cp-feedback-title {
+    font-size: 14px; font-weight: 600; margin-bottom: 4px;
+  }
+  .cp-feedback-box.strong .cp-feedback-title { color: var(--green-600); }
+  .cp-feedback-box.developing .cp-feedback-title { color: var(--amber-600); }
+  .cp-feedback-text { font-size: 13px; color: #5F5E5A; line-height: 1.5; }
+
+  .cp-followup-box {
+    background: var(--purple-50); border-radius: 12px; padding: 14px;
+    margin-bottom: 14px; display: none;
+  }
+  .cp-followup-box.visible { display: block; }
+  .cp-followup-eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--purple-600); margin-bottom: 5px;
+  }
+  .cp-followup-text { font-size: 15px; font-weight: 600; font-style: italic; color: #1a1a1a; line-height: 1.45; }
+
+  .cp-done-btn {
+    width: 100%; padding: 16px; border-radius: 14px;
+    background: var(--teal-600); border: none; color: #fff;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    display: none; transition: background 0.15s;
+  }
+  .cp-done-btn.visible { display: block; }
+  .cp-done-btn:active { background: var(--teal-800); }
+
+  .cp-trigger-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--blue-50); border: 1px solid var(--blue-100);
+    border-radius: 10px; padding: 8px 14px;
+    font-size: 13px; font-weight: 600; color: var(--blue-600);
+    cursor: pointer; margin-bottom: 10px;
+  }
+  .cp-loading {
+    display: none; align-items: center; gap: 8px;
+    padding: 10px 0; color: var(--blue-600); font-size: 13px;
+  }
+  .cp-loading.active { display: flex; }
+  .cp-spinner {
+    width: 16px; height: 16px; border: 2px solid var(--blue-100);
+    border-top-color: var(--blue-600); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+
+  /* TEACHING POINT */
+  .teaching-point {
+    border: 1.5px solid #E8E6DF; border-radius: 14px;
+    margin-bottom: 14px; overflow: hidden;
+  }
+  .tp-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; cursor: pointer; background: #FAFAF8;
+    user-select: none;
+  }
+  .tp-toggle:active { background: #F3F1EB; }
+  .tp-toggle-label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #1a1a1a; }
+  .tp-chevron { font-size: 14px; color: #888780; transition: transform 0.2s; }
+  .tp-chevron.open { transform: rotate(180deg); }
+
+  .tp-body {
+    padding: 0 14px; max-height: 0; overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.2s;
+  }
+  .tp-body.open { max-height: 400px; padding: 0 14px 14px; }
+
+  .tp-category {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--teal-600);
+    margin-bottom: 6px; margin-top: 4px;
+  }
+  .tp-principle {
+    font-size: 14px; font-weight: 600; color: #1a1a1a;
+    line-height: 1.5; margin-bottom: 8px;
+  }
+  .tp-transfer {
+    font-size: 13px; color: #5F5E5A; line-height: 1.6;
+    background: var(--teal-50); border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 10px;
+  }
+  .tp-save-btn {
+    width: 100%; padding: 9px; border-radius: 10px;
+    border: 1.5px dashed var(--teal-100); background: transparent;
+    font-size: 13px; font-weight: 600; color: var(--teal-600);
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .tp-save-btn:hover { background: var(--teal-50); }
+  .tp-save-btn:active { transform: scale(0.98); }
+  .tp-save-btn.saved { border-style: solid; background: var(--teal-50); color: var(--teal-800); }
+
+  /* LEARN SCREEN */
+  .learn-content { padding: 20px 16px; flex: 1; overflow-y: auto; }
+  .learn-intro {
+    background: linear-gradient(135deg, var(--teal-50), var(--blue-50));
+    border-radius: 16px; padding: 20px; margin-bottom: 20px;
+    text-align: center;
+  }
+  .learn-intro-icon { font-size: 32px; margin-bottom: 8px; }
+  .learn-intro-title { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+  .learn-intro-sub { font-size: 13px; color: #5F5E5A; line-height: 1.6; }
+
+  .strategy-card {
+    background: #F7F6F2; border-radius: 14px;
+    padding: 16px; margin-bottom: 10px;
+    border-left: 4px solid var(--teal-400);
+  }
+  .strategy-card.fluency { border-left-color: var(--purple-400); }
+  .strategy-card.comprehension { border-left-color: var(--blue-600); }
+  .strategy-card.vocabulary { border-left-color: #D85A30; }
+
+  .sc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .sc-category {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--teal-600); margin-bottom: 3px;
+  }
+  .strategy-card.fluency .sc-category { color: var(--purple-600); }
+  .strategy-card.comprehension .sc-category { color: var(--blue-600); }
+  .strategy-card.vocabulary .sc-category { color: #D85A30; }
+
+  .sc-name { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .sc-times { font-size: 11px; color: #888780; white-space: nowrap; margin-top: 2px; }
+  .sc-principle { font-size: 13px; color: #3a3a3a; line-height: 1.5; margin-bottom: 8px; }
+  .sc-transfer {
+    font-size: 13px; color: #5F5E5A; line-height: 1.5;
+    background: #fff; border-radius: 8px; padding: 8px 10px;
+    font-style: italic;
+  }
+
+  .empty-state { text-align: center; padding: 40px 20px; }
+
+  /* LEARN TAB BADGE */
+  .tab-badge {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal-400); position: absolute;
+    top: 8px; right: 20px;
+    display: none;
+  }
+  .tab-badge.visible { display: block; }
+
+  /* UNSUPPORTED */
+  .unsupported-msg {
+    background: var(--amber-50); border-radius: 14px; padding: 16px;
+    font-size: 14px; color: var(--amber-600); line-height: 1.6; margin-bottom: 16px;
+    display: none;
+  }
+
+
+    background: var(--amber-50); border: 1px solid var(--amber-100);
+    border-radius: 14px; padding: 16px; margin-bottom: 16px;
+    font-size: 14px; color: var(--amber-600); line-height: 1.5;
+    display: none;
+  }
+
+  /* PROFILE SCREEN */
+  /* ── LIBRARY SCREEN ─────────────────────────────────────────── */
+  .library-content { padding: 16px; flex: 1; overflow-y: auto; }
+  .lib-search-wrap {
+    display: flex; align-items: center; gap: 10px;
+    background: #F7F6F2; border-radius: 14px; padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+  .lib-search-icon { font-size: 16px; flex-shrink: 0; }
+  .lib-search {
+    flex: 1; border: none; background: transparent; font-size: 15px;
+    color: #1a1a1a; font-family: inherit; outline: none;
+  }
+  .lib-search::placeholder { color: #B4B2A9; }
+  .lib-filters { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .lib-filter {
+    padding: 5px 14px; border-radius: 20px; border: 1.5px solid #E8E6DF;
+    background: transparent; font-size: 13px; font-weight: 500;
+    color: #888780; cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .lib-filter.active { background: var(--teal-50); border-color: var(--teal-100); color: var(--teal-600); }
+  .lib-filter:active { transform: scale(0.96); }
+  .book-tile {
+    display: flex; align-items: center; gap: 12px;
+    background: #F7F6F2; border-radius: 14px; padding: 14px;
+    margin-bottom: 10px; cursor: pointer; transition: all 0.15s;
+    border: 2px solid transparent;
+  }
+  .book-tile:active { transform: scale(0.98); }
+  .book-tile.selected { border-color: var(--teal-400); background: var(--teal-50); }
+  .book-emoji { font-size: 32px; flex-shrink: 0; }
+  .book-info-col { flex: 1; min-width: 0; }
+  .book-tile-title { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .book-tile-author { font-size: 12px; color: #888780; margin-top: 2px; }
+  .book-tile-tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .book-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #E8E6DF; color: #5F5E5A; font-weight: 500; }
+  .book-tag.level { background: var(--teal-50); color: var(--teal-600); }
+  .book-tag.match { background: var(--purple-50); color: var(--purple-600); }
+  .book-tile-action {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    background: var(--teal-400); display: flex; align-items: center;
+    justify-content: center; font-size: 18px; color: #fff;
+  }
+  .book-tile-action.secondary { background: #E8E6DF; color: #5F5E5A; font-size: 16px; }
+  .lib-add-row { padding: 8px 0 4px; }
+  .lib-add-btn {
+    width: 100%; padding: 12px; border-radius: 12px;
+    border: 2px dashed #D3D1C7; background: transparent;
+    font-size: 14px; font-weight: 500; color: #888780;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .lib-add-btn:hover { border-color: var(--teal-100); color: var(--teal-600); background: var(--teal-50); }
+  .lib-custom-panel { margin-top: 14px; }
+  .lib-custom-input {
+    width: 100%; padding: 12px 14px; border-radius: 12px;
+    border: 1.5px solid #E8E6DF; background: #fff;
+    font-size: 14px; color: #1a1a1a; font-family: inherit;
+    margin-bottom: 10px; outline: none; transition: border-color 0.15s;
+  }
+  .lib-custom-input:focus { border-color: var(--teal-400); }
+  .lib-custom-save {
+    width: 100%; padding: 14px; border-radius: 14px;
+    background: var(--teal-600); border: none; color: #fff;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: background 0.15s;
+  }
+  .lib-custom-save:active { background: var(--teal-800); }
+
+  /* ── SESSION SUMMARY ─────────────────────────────────────────── */
+  .summary-content { padding: 20px 16px; flex: 1; overflow-y: auto; }
+  .summary-hero {
+    background: linear-gradient(135deg, var(--teal-50) 0%, var(--blue-50) 100%);
+    border-radius: 20px; padding: 24px 20px; text-align: center; margin-bottom: 20px;
+  }
+  .summary-emoji { font-size: 48px; margin-bottom: 8px; }
+  .summary-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+  .summary-sub { font-size: 14px; color: #5F5E5A; line-height: 1.5; }
+  .summary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+  .sum-stat { background: #fff; border-radius: 12px; padding: 12px 8px; text-align: center; }
+  .sum-stat-val { font-size: 22px; font-weight: 700; color: #1a1a1a; }
+  .sum-stat-label { font-size: 11px; color: #888780; margin-top: 2px; line-height: 1.3; }
+  .summary-section { margin-bottom: 20px; }
+  .summary-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #888780; margin-bottom: 10px; }
+  .moment-card { background: #F7F6F2; border-radius: 14px; padding: 14px; margin-bottom: 8px; display: flex; gap: 12px; align-items: flex-start; }
+  .moment-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .moment-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+  .moment-desc { font-size: 13px; color: #5F5E5A; line-height: 1.4; }
+  .moment-time { font-size: 11px; color: #B4B2A9; margin-top: 3px; }
+  .focus-card { border-radius: 14px; padding: 16px; margin-bottom: 8px; }
+  .focus-card.primary { background: var(--teal-50); border: 1.5px solid var(--teal-100); }
+  .focus-card.secondary { background: #F7F6F2; border: 1.5px solid #E8E6DF; }
+  .focus-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 5px; }
+  .focus-card.primary .focus-eyebrow { color: var(--teal-600); }
+  .focus-card.secondary .focus-eyebrow { color: #888780; }
+  .focus-title { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
+  .focus-desc { font-size: 13px; color: #5F5E5A; line-height: 1.5; }
+  .summary-skill-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .summary-skill-name { font-size: 13px; color: #3a3a3a; width: 110px; flex-shrink: 0; }
+  .summary-skill-track { flex: 1; height: 8px; background: #E8E6DF; border-radius: 4px; }
+  .summary-skill-fill { height: 8px; border-radius: 4px; }
+  .summary-skill-delta { font-size: 11px; font-weight: 600; margin-left: auto; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+  .delta-up { background: var(--green-50); color: var(--green-600); }
+  .delta-down { background: var(--red-50); color: var(--red-600); }
+  .delta-same { background: #F1EFE8; color: #888780; }
+  .summary-cta { display: flex; gap: 10px; margin-top: 8px; padding-bottom: 20px; }
+  .sum-btn { flex: 1; padding: 15px; border-radius: 14px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .sum-btn:active { transform: scale(0.97); }
+  .sum-btn.primary { background: var(--teal-600); color: #fff; }
+  .sum-btn.primary:active { background: var(--teal-800); }
+  .sum-btn.secondary { background: #F7F6F2; color: #3a3a3a; border: 1.5px solid #E8E6DF; }
+  .generating-summary { display: flex; flex-direction: column; align-items: center; padding: 60px 20px; text-align: center; gap: 16px; }
+  .gen-spinner { width: 40px; height: 40px; border: 3px solid var(--teal-100); border-top-color: var(--teal-400); border-radius: 50%; animation: spin 1s linear infinite; }
+  .gen-label { font-size: 15px; color: #5F5E5A; line-height: 1.5; }
+
+  /* PROFILE SCREEN (continued) */
+  .profile-content { padding: 20px 16px; flex: 1; overflow-y: auto; }
+  .profile-hero {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+  }
+  .profile-avatar {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--teal-400); display: flex; align-items: center;
+    justify-content: center; font-size: 24px; font-weight: 700; color: #fff;
+  }
+  .profile-name { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+  .profile-grade { font-size: 14px; color: #888780; margin-top: 3px; }
+
+  .skill-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .skill-name { font-size: 14px; color: #3a3a3a; width: 110px; flex-shrink: 0; }
+  .skill-track { flex: 1; height: 8px; background: #F1EFE8; border-radius: 4px; }
+  .skill-fill { height: 8px; border-radius: 4px; transition: width 0.6s ease; }
+  .skill-pct { font-size: 13px; font-weight: 600; color: #3a3a3a; width: 36px; text-align: right; }
+
+  .insight-card {
+    background: #F7F6F2; border-radius: 14px; padding: 14px;
+    margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .insight-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+  .insight-text { font-size: 14px; color: #3a3a3a; line-height: 1.5; }
+  .insight-meta { font-size: 12px; color: #888780; margin-top: 4px; }
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span class="status-time" id="clock">9:41</span>
+    <div class="status-icons">
+      <span>📶</span><span>🔋</span>
+    </div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="screen-home">
+    <div class="nav-bar">
+      <div style="width:36px;"></div>
+      <div style="text-align:center;"><div class="nav-title">Alongside</div><div style="font-size:11px;color:#888780;margin-top:1px;">Your child's reading coach, in your pocket</div></div>
+      <div class="nav-btn">⚙️</div>
+    </div>
+    <div class="home-content">
+      <div class="child-row">
+        <div class="avatar">N</div>
+        <div>
+          <div class="child-name">Noa, age 7</div>
+          <div class="child-sub">Grade 2</div>
+        </div>
+        <div class="streak">
+          <div class="streak-num">🔥 6</div>
+          <div class="streak-label">day streak</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-bottom:10px;">This week</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val">4</div>
+          <div class="stat-label">Sessions</div>
+          <div class="stat-delta">↑ Goal: 5</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">81%</div>
+          <div class="stat-label">Accuracy</div>
+          <div class="stat-delta">↑ +4% this week</div>
+        </div>
+      </div>
+
+      <button class="start-btn" onclick="startSession()">
+        <span class="start-btn-icon">🎙️</span> Start reading session
+      </button>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="section-label" style="margin-bottom:0;">Continue reading</div>
+        <button onclick="switchTab('library')" style="font-size:13px;color:var(--teal-600);font-weight:600;background:none;border:none;cursor:pointer;font-family:inherit;">Browse library ›</button>
+      </div>
+      <div class="log-card" style="display:flex;align-items:center;gap:12px;padding:14px;background:#F7F6F2;border-radius:14px;margin-bottom:14px;cursor:pointer;" onclick="switchTab('library')">
+        <div style="font-size:36px;" id="home-book-emoji">🦒</div>
+        <div style="flex:1;">
+          <div style="font-size:15px;font-weight:600;color:#1a1a1a;" id="home-book-title">Giraffes Can't Dance</div>
+          <div style="font-size:12px;color:#888780;margin-top:2px;" id="home-book-author">Giles Andreae · Level K · Ages 5–8</div>
+          <div style="height:3px;background:#E8E6DF;border-radius:2px;margin-top:8px;"><div style="width:35%;height:3px;background:#1D9E75;border-radius:2px;" id="home-book-progress"></div></div>
+        </div>
+        <div style="font-size:12px;color:#888780;">Change ›</div>
+      </div>
+
+      <div class="section-label">Recent sessions</div>
+      <div class="log-card">
+        <div class="log-row">
+          <div class="log-dot" style="background:#1D9E75;"></div>
+          <div>
+            <div class="log-text">Giraffes Can’t Dance — 12 min, 2 coaching moments</div>
+            <div class="log-time">Yesterday · 8:12pm</div>
+          </div>
+        </div>
+        <div class="log-row">
+          <div class="log-dot" style="background:#EF9F27;"></div>
+          <div>
+            <div class="log-text">Giraffes Can’t Dance — hesitation on “waltzing”, vowel team cue worked</div>
+            <div class="log-time">2 days ago · 7:45pm</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSION SCREEN -->
+  <div class="screen" id="screen-session">
+    <div class="nav-bar">
+      <div class="nav-btn" onclick="endSession()">✕</div>
+      <div class="nav-title" id="session-title">Reading session</div>
+      <div class="nav-btn" id="manual-flag-nav" onclick="manualFlag()" title="Tap if she's stuck">🚩</div>
+    </div>
+    <div class="session-content">
+      <div class="session-meta">
+        <div class="meta-book">🦒 Giraffes Can’t Dance</div>
+        <div class="meta-timer">⏱ <span id="timer-display">0:00</span></div>
+      </div>
+
+      <div class="listening-hero">
+        <div class="pulse-wrap" id="pulse-wrap">
+          <div class="ring1"></div>
+          <div class="ring2"></div>
+          <div class="pulse-ring" id="pulse-ring">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="18" y="6" width="4" height="18" rx="2" fill="#0F6E56"/>
+              <rect x="12" y="12" width="4" height="12" rx="2" fill="#1D9E75"/>
+              <rect x="24" y="12" width="4" height="12" rx="2" fill="#1D9E75"/>
+              <rect x="6" y="16" width="4" height="8" rx="2" fill="#9FE1CB"/>
+              <rect x="30" y="16" width="4" height="8" rx="2" fill="#9FE1CB"/>
+              <path d="M8 30c3-4 6-6 12-6s9 2 12 6" stroke="#0F6E56" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="listen-status" id="listen-status">Ready to listen</div>
+        <div class="listen-sub" id="listen-sub">Tap Start — the app will listen as Noa reads and step in when she needs help.</div>
+
+        <div class="unsupported-msg" id="unsupported-msg">
+          Speech recognition isn't supported in this browser. Try <strong>Safari on iPhone</strong>, or Chrome/Edge on desktop. You can still tap 🚩 to flag struggles manually.
+        </div>
+
+
+        <div class="waveform" id="waveform">
+          <div class="wave-bar" id="wb1"></div>
+          <div class="wave-bar" id="wb2"></div>
+          <div class="wave-bar" id="wb3"></div>
+          <div class="wave-bar" id="wb4"></div>
+          <div class="wave-bar" id="wb5"></div>
+          <div class="wave-bar" id="wb6"></div>
+          <div class="wave-bar" id="wb7"></div>
+          <div class="wave-bar" id="wb8"></div>
+          <div class="wave-bar" id="wb9"></div>
+          <div class="wave-bar" id="wb10"></div>
+          <div class="wave-bar" id="wb11"></div>
+          <div class="wave-bar" id="wb12"></div>
+        </div>
+
+        <div style="width:100%;">
+          <div class="section-label">What the app hears</div>
+          <div class="transcript-box" id="transcript-box">
+            <span class="transcript-placeholder">Words will appear here as Noa reads aloud...</span>
+          </div>
+          <div class="loading-row" id="loading-row">
+            <div class="spinner"></div>
+            <span>Analyzing for intervention...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="session-controls" id="session-controls">
+        <button class="ctrl-btn ctrl-start" id="ctrl-btn" onclick="toggleListening()">
+          🎙️ Start listening
+        </button>
+        <button class="ctrl-btn ctrl-manual" onclick="manualFlag()" title="Tap if child is stuck" style="font-size:18px;">🚩</button>
+        <button class="ctrl-btn ctrl-manual" onclick="triggerCheckpoint()" title="Ask a comprehension question" style="font-size:18px; background:var(--blue-50); border-color:var(--blue-100); color:var(--blue-600);">💬</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE SCREEN -->
+  <div class="screen" id="screen-profile">
+    <div class="nav-bar">
+      <div style="width:36px;"></div>
+      <div class="nav-title">Noa's profile</div>
+      <div class="nav-btn">✏️</div>
+    </div>
+    <div class="profile-content">
+      <div class="profile-hero">
+        <div class="profile-avatar">E</div>
+        <div>
+          <div class="profile-name">Noa, age 7</div>
+          <div class="profile-grade">Grade 2 · 24 sessions</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-bottom:14px;">Reading skills</div>
+      <div class="skill-row">
+        <div class="skill-name">Decoding</div>
+        <div class="skill-track"><div class="skill-fill" style="width:72%;background:#1D9E75;"></div></div>
+        <div class="skill-pct" id="pct-decoding">72%</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name">Fluency</div>
+        <div class="skill-track"><div class="skill-fill" style="width:58%;background:#378ADD;"></div></div>
+        <div class="skill-pct" id="pct-fluency">58%</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name">Comprehension</div>
+        <div class="skill-track"><div class="skill-fill" style="width:65%;background:#7F77DD;"></div></div>
+        <div class="skill-pct" id="pct-comprehension">65%</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name">Vocabulary</div>
+        <div class="skill-track"><div class="skill-fill" style="width:50%;background:#D85A30;"></div></div>
+        <div class="skill-pct" id="pct-vocab">50%</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name">Phonics</div>
+        <div class="skill-track"><div class="skill-fill" style="width:80%;background:#1D9E75;"></div></div>
+        <div class="skill-pct">80%</div>
+      </div>
+
+      <div class="section-label" style="margin-top:20px;margin-bottom:12px;">AI insights</div>
+      <div class="insight-card">
+        <div class="insight-dot" style="background:#EF9F27;"></div>
+        <div>
+          <div class="insight-text">Often guesses multisyllabic words from the first letter rather than processing the full orthographic pattern.</div>
+          <div class="insight-meta">Orthographic mapping · seen 8 sessions</div>
+        </div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-dot" style="background:#1D9E75;"></div>
+        <div>
+          <div class="insight-text">Retell accuracy improved 18% over the past 2 weeks — comprehension is strengthening.</div>
+          <div class="insight-meta">Comprehension strand · keep using retell prompts</div>
+        </div>
+      </div>
+      <div class="insight-card" id="session-insights" style="display:none;">
+        <div class="insight-dot" style="background:#7F77DD;"></div>
+        <div>
+          <div class="insight-text" id="session-insight-text">Updated from today's session.</div>
+          <div class="insight-meta">Just now</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPREHENSION CHECKPOINT OVERLAY -->
+  <div class="cp-sheet-overlay" id="cp-overlay" onclick="closeCpOnBackdrop(event)">
+    <div class="cp-sheet" id="cp-sheet">
+      <div class="cp-handle"></div>
+
+      <div class="cp-header-row">
+        <div class="cp-type-icon" id="cp-type-icon">💬</div>
+        <div>
+          <div class="cp-header-title" id="cp-header-title">Comprehension checkpoint</div>
+          <div class="cp-header-sub" id="cp-header-sub">Generating question...</div>
+        </div>
+      </div>
+
+      <div class="cp-pause-hint">
+        <span class="cp-pause-hint-icon">💡</span>
+        <span>Ask Noa this question aloud, then tap the answer she gives. No wrong answers — this helps track how her comprehension is developing.</span>
+      </div>
+
+      <div class="cp-question-box" id="cp-question-box" style="display:none;">
+        <div class="cp-q-eyebrow">Ask Noa</div>
+        <div class="cp-q-text" id="cp-question-text">Loading question...</div>
+      </div>
+
+      <div class="cp-loading" id="cp-loading">
+        <div class="cp-spinner"></div>
+        <span>Generating checkpoint question...</span>
+      </div>
+
+      <div id="cp-answer-area" style="display:none;">
+        <div class="cp-answers-label">Tap the answer she gave</div>
+        <div class="cp-options" id="cp-options"></div>
+
+        <div class="cp-feedback-box" id="cp-feedback-box">
+          <div class="cp-feedback-title" id="cp-feedback-title"></div>
+          <div class="cp-feedback-text" id="cp-feedback-text"></div>
+        </div>
+
+        <div class="cp-followup-box" id="cp-followup-box">
+          <div class="cp-followup-eyebrow">Follow-up to say</div>
+          <div class="cp-followup-text" id="cp-followup-text"></div>
+        </div>
+
+        <button class="cp-done-btn" id="cp-done-btn" onclick="dismissCheckpoint()">
+          Continue reading ▸
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR COACHING SCREEN (full overlay) -->
+  <div class="error-overlay" id="sheet-overlay" onclick="closeSheetOnBackdrop(event)">
+    <div class="error-screen" id="coach-sheet">
+
+      <!-- Header -->
+      <div class="error-header">
+        <div class="error-header-left">
+          <div class="error-header-label">What Noa said</div>
+        </div>
+        <button class="error-close" onclick="dismissSheet('skip')">✕</button>
+      </div>
+
+      <!-- Target vs Said -->
+      <div class="error-words-row">
+        <div class="error-word-col">
+          <div class="error-word-label">Target word</div>
+          <div class="error-word target" id="error-target-word">—</div>
+        </div>
+        <div class="error-arrow">→</div>
+        <div class="error-word-col">
+          <div class="error-word-label">Noa said</div>
+          <div class="error-word said" id="error-said-word">—</div>
+        </div>
+      </div>
+
+      <!-- Error pattern badge -->
+      <div class="error-pattern-box">
+        <div class="error-pattern-label">Detected error pattern</div>
+        <div class="error-pattern-name" id="error-pattern-name">—</div>
+      </div>
+
+      <!-- What this usually means -->
+      <div class="error-section">
+        <div class="error-section-title">What this usually means</div>
+        <div class="error-means-list" id="error-means-list"></div>
+      </div>
+
+      <!-- What to say -->
+      <div class="error-say-box" id="prompt-box">
+        <div class="error-say-label">What to say</div>
+        <div class="error-say-text" id="prompt-text">Loading...</div>
+      </div>
+
+      <!-- Transferable teaching point -->
+      <div class="error-teaching">
+        <div class="error-section-title">Transferable teaching point</div>
+        <div class="error-teaching-text" id="tp-transfer">—</div>
+        <button class="tp-save-btn" id="tp-save-btn" onclick="saveToLearnTab()">＋ Save to my strategies</button>
+      </div>
+
+      <!-- Optional practice -->
+      <div class="error-practice" id="error-practice-row" style="display:none;">
+        <div class="error-section-title">Optional practice words</div>
+        <div class="error-practice-words" id="error-practice-words"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="error-actions">
+        <button class="error-btn-continue" onclick="dismissSheet('worked')">Continue reading ▸</button>
+        <button class="error-btn-more" id="escalate-btn" onclick="escalatePrompt()">↑ More support</button>
+      </div>
+
+      <!-- Hidden fields still needed by JS -->
+      <div style="display:none;">
+        <div id="sheet-icon"></div>
+        <div id="sheet-title"></div>
+        <div id="sheet-sub"></div>
+        <div id="sheet-word-chip"></div>
+        <div id="prompt-eyebrow"></div>
+        <div id="tp-toggle-icon"></div>
+        <div id="tp-strategy-name"></div>
+        <div id="tp-category"></div>
+        <div id="tp-principle"></div>
+        <div id="tp-body"></div>
+        <div id="tp-chevron"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEARN SCREEN -->
+  <div class="screen" id="screen-learn">
+    <div class="nav-bar">
+      <div style="width:36px;"></div>
+      <div class="nav-title">Your strategies</div>
+      <div style="width:36px;"></div>
+    </div>
+    <div class="learn-content" id="learn-content">
+      <div class="learn-intro">
+        <div class="learn-intro-icon">🧠</div>
+        <div class="learn-intro-title">Build your coaching toolkit</div>
+        <div class="learn-intro-sub">Every time the app coaches you, you can save the strategy. Over time you'll internalize these moves and use them independently — without the app.</div>
+      </div>
+      <div id="saved-strategies-list">
+        <div class="empty-state" id="learn-empty">
+          <div style="font-size:32px;margin-bottom:8px;">📚</div>
+          <div style="font-size:15px;font-weight:600;color:#3a3a3a;margin-bottom:4px;">No strategies saved yet</div>
+          <div style="font-size:13px;color:#888780;line-height:1.5;">During a session, tap "Save to my strategies" on any coaching tip to add it here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIBRARY SCREEN -->
+  <div class="screen" id="screen-library">
+    <div class="nav-bar">
+      <div style="width:36px;"></div>
+      <div class="nav-title">Book library</div>
+      <div style="width:36px;"></div>
+    </div>
+    <div class="library-content">
+      <div class="lib-search-wrap">
+        <span class="lib-search-icon">🔍</span>
+        <input class="lib-search" id="lib-search" type="text" placeholder="Search by title, author, or level…" oninput="filterBooks(this.value)" />
+      </div>
+      <div class="lib-filters" id="lib-filters">
+        <button class="lib-filter active" onclick="setFilter('all',this)">All</button>
+        <button class="lib-filter" onclick="setFilter('J',this)">Level J</button>
+        <button class="lib-filter" onclick="setFilter('K',this)">Level K</button>
+        <button class="lib-filter" onclick="setFilter('L',this)">Level L</button>
+        <button class="lib-filter" onclick="setFilter('M',this)">Level M</button>
+      </div>
+      <div class="section-label" style="margin-bottom:10px;">Current book</div>
+      <div id="lib-current-book"></div>
+      <div class="section-label" style="margin-bottom:10px;" id="lib-suggested-label">Suggested for Noa</div>
+      <div id="lib-book-list"></div>
+      <div class="lib-add-row">
+        <button class="lib-add-btn" onclick="showAddBook()">＋ Add a book not in the library</button>
+      </div>
+      <!-- Add custom book panel -->
+      <div class="lib-custom-panel" id="lib-custom-panel" style="display:none;">
+        <div class="section-label" style="margin-bottom:8px;">Add any book</div>
+        <input class="lib-custom-input" id="custom-title" type="text" placeholder="Book title" />
+        <input class="lib-custom-input" id="custom-author" type="text" placeholder="Author" />
+        <div style="display:flex;gap:8px;">
+          <input class="lib-custom-input" id="custom-level" type="text" placeholder="Reading level (e.g. K)" style="flex:1;" />
+          <input class="lib-custom-input" id="custom-age" type="text" placeholder="Ages (e.g. 5–8)" style="flex:1;" />
+        </div>
+        <button class="lib-custom-save" onclick="addCustomBook()">Add book — AI will configure the session</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSION SUMMARY SCREEN -->
+  <div class="screen" id="screen-summary">
+    <div class="nav-bar">
+      <div style="width:36px;"></div>
+      <div class="nav-title">Session summary</div>
+      <div style="width:36px;"></div>
+    </div>
+    <div class="summary-content" id="summary-content">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar" id="tab-bar">
+    <div class="tab active" id="tab-home" onclick="switchTab('home')">
+      <div class="tab-icon">🏠</div>
+      <div class="tab-label">Home</div>
+    </div>
+    <div class="tab" id="tab-library" onclick="switchTab('library')">
+      <div class="tab-icon">📚</div>
+      <div class="tab-label">Library</div>
+    </div>
+    <div class="tab" id="tab-learn" onclick="switchTab('learn')" style="position:relative;">
+      <div class="tab-icon">🧠</div>
+      <div class="tab-label">Learn</div>
+      <div class="tab-badge" id="learn-badge"></div>
+    </div>
+    <div class="tab" id="tab-profile" onclick="switchTab('profile')">
+      <div class="tab-icon">📊</div>
+      <div class="tab-label">Profile</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Clock ──────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes();
+  document.getElementById('clock').textContent =
+    (h % 12 || 12) + ':' + String(m).padStart(2,'0');
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+// ── Tab navigation ─────────────────────────────────────────────
+function switchTab(name) {
+  ['home','session','library','learn','profile','summary'].forEach(t => {
+    document.getElementById('screen-'+t)?.classList.toggle('active', t === name);
+    document.getElementById('tab-'+t)?.classList.toggle('active', t === name);
+  });
+  if (name === 'learn') document.getElementById('learn-badge')?.classList.remove('visible');
+  if (name === 'library') renderLibrary();
+}
+
+// ── Book library ───────────────────────────────────────────────
+const LIBRARY = [
+  { id:'gcb', emoji:'🦒', title:"Giraffes Can't Dance", author:'Giles Andreae', level:'K', ages:'5–8', themes:['self-confidence','individuality','perseverance'], trickyWords:['warthogs','rhinoceros','gracefully','elegant','swaying','moonlight','cricket','trembling','wonderful'], current:true, progress:35,
+    vocab:['warthogs','chimps','rhinoceros','elegant','swaying','graceful','moonlight','cricket','trembling','wonderful'],
+    checkpoints:{ 3:{type:'character motivation',q:"Why does Gerald feel sad at the Jungle Dance?"}, 5:{type:'inference',q:"How do you think Gerald felt when the animals laughed at him?"}, 7:{type:'vocabulary in context',q:"The cricket says Gerald needs 'a different song.' What do you think that means?"}, 9:{type:'causal reasoning',q:"What changed for Gerald? What made him able to dance?"} } },
+  { id:'cweb', emoji:'🕷️', title:"Charlotte's Web", author:'E.B. White', level:'L', ages:'7–10', themes:['friendship','loyalty','loss','kindness'], trickyWords:['Charlotte','magnificent','terrific','humble','salutations','miraculous','gullible'], suggested:true,
+    vocab:['magnificent','terrific','humble','salutations','miraculous','gullible','radiant'],
+    checkpoints:{ 3:{type:'inference',q:"Why does Wilbur feel lonely at the beginning?"}, 6:{type:'character motivation',q:"Why does Charlotte want to help Wilbur?"}, 9:{type:'vocabulary in context',q:"Charlotte writes 'Some Pig' — what does she want the humans to think?"} } },
+  { id:'mmouse', emoji:'🐭', title:"If You Give a Mouse a Cookie", author:'Laura Numeroff', level:'J', ages:'4–7', themes:['cause and effect','sequence','humor'], trickyWords:['probably','noticed','scissors','magazine','refrigerator'],
+    vocab:['probably','noticed','scissors','magazine','refrigerator','comfortable'],
+    checkpoints:{ 2:{type:'story grammar',q:"What does the mouse ask for first?"}, 4:{type:'causal reasoning',q:"Why does one thing keep leading to another?"} } },
+  { id:'owl', emoji:'🦉', title:"Owl at Home", author:'Arnold Lobel', level:'K', ages:'5–8', themes:['home','seasons','imagination','loneliness'], trickyWords:['invited','frightened','strangely','bumps','outside'],
+    vocab:['invited','frightened','strangely','perfectly','outside','tears'],
+    checkpoints:{ 3:{type:'inference',q:"Why does Owl invite Winter inside? What does that tell us about him?"}, 6:{type:'character motivation',q:"Why does Owl feel sad at the end of the chapter?"} } },
+  { id:'frog', emoji:'🐸', title:"Frog and Toad Are Friends", author:'Arnold Lobel', level:'K', ages:'5–8', themes:['friendship','patience','kindness'], trickyWords:['reluctantly','impatient','surprised','together','important'],
+    vocab:['reluctantly','impatient','surprised','together','important','certainly'],
+    checkpoints:{ 3:{type:'inference',q:"How does Toad feel about getting up early? What tells you that?"}, 6:{type:'character motivation',q:"Why does Frog play a trick on Toad with the letter?"} } },
+  { id:'elephant', emoji:'🐘', title:"Elephant and Piggie: We Are in a Book!", author:'Mo Willems', level:'J', ages:'5–7', themes:['friendship','reading','humor','meta-fiction'], trickyWords:['discover','noticed','together','exciting','banana'],
+    vocab:['discover','noticed','excited','together','banana','reader'],
+    checkpoints:{ 2:{type:'inference',q:"How do Gerald and Piggie feel when they realize someone is reading them?"}, 4:{type:'story grammar',q:"What is Piggie's plan to stay in the book?"} } },
+  { id:'whiskey', emoji:'🌳', title:"The Giving Tree", author:'Shel Silverstein', level:'L', ages:'5–9', themes:['generosity','love','growing up','nature'], trickyWords:['apples','branches','trunk','stumped','lonely'],
+    vocab:['apples','branches','trunk','lonely','happy','stumped'],
+    checkpoints:{ 3:{type:'character motivation',q:"Why does the tree give the boy everything she has?"}, 6:{type:'inference',q:"How does the relationship between the boy and the tree change as he grows up?"} } },
+  { id:'snowy', emoji:'❄️', title:"The Snowy Day", author:'Ezra Jack Keats', level:'J', ages:'3–7', themes:['wonder','seasons','childhood','exploration'], trickyWords:['crunch','smacking','packed','mountain','footprints'],
+    vocab:['crunch','smacking','packed','mountain','footprints','melted'],
+    checkpoints:{ 2:{type:'prediction',q:"What do you think Peter will find when he goes back outside?"}, 4:{type:'inference',q:"How does Peter feel about the snow? What tells you that?"} } },
+];
+
+let activeFilter = 'all';
+let searchQuery = '';
+let selectedBook = LIBRARY.find(b => b.current) || LIBRARY[0];
+
+function renderLibrary() {
+  renderCurrentBook();
+  renderBookList();
+}
+
+function renderCurrentBook() {
+  const b = selectedBook;
+  document.getElementById('lib-current-book').innerHTML = bookTileHTML(b, true);
+}
+
+function renderBookList() {
+  const list = document.getElementById('lib-book-list');
+  const label = document.getElementById('lib-suggested-label');
+  const q = searchQuery.toLowerCase();
+  let books = LIBRARY.filter(b => b.id !== selectedBook.id);
+  if (activeFilter !== 'all') books = books.filter(b => b.level === activeFilter);
+  if (q) books = books.filter(b =>
+    b.title.toLowerCase().includes(q) ||
+    b.author.toLowerCase().includes(q) ||
+    b.level.toLowerCase().includes(q)
+  );
+  label.textContent = q ? `Results for "${searchQuery}"` : 'Suggested for Noa';
+  list.innerHTML = books.map(b => bookTileHTML(b, false)).join('');
+}
+
+function bookTileHTML(b, isCurrent) {
+  const tags = [
+    `<span class="book-tag level">Level ${b.level}</span>`,
+    `<span class="book-tag">Ages ${b.ages}</span>`,
+    b.suggested ? `<span class="book-tag match">✦ Suggested</span>` : '',
+  ].join('');
+  const action = isCurrent
+    ? `<div class="book-tile-action" style="background:var(--teal-600);font-size:13px;width:auto;border-radius:10px;padding:0 10px;">Reading</div>`
+    : `<div class="book-tile-action" onclick="selectBook('${b.id}',event)">▶</div>`;
+  return `<div class="book-tile ${isCurrent ? 'selected' : ''}" onclick="${isCurrent ? '' : `selectBook('${b.id}',event)`}">
+    <div class="book-emoji">${b.emoji}</div>
+    <div class="book-info-col">
+      <div class="book-tile-title">${b.title}</div>
+      <div class="book-tile-author">${b.author}</div>
+      <div class="book-tile-tags">${tags}</div>
+    </div>
+    ${action}
+  </div>`;
+}
+
+function selectBook(id, e) {
+  if (e) e.stopPropagation();
+  const book = LIBRARY.find(b => b.id === id);
+  if (!book) return;
+  selectedBook = book;
+  // Update the global BOOK object used by the AI
+  Object.assign(BOOK, {
+    title: book.title,
+    author: book.author,
+    level: book.level,
+    ageRange: book.ages,
+    themes: book.themes || [],
+    vocabulary: book.vocab || [],
+    trickyWords: { multisyllabic: book.trickyWords || [], vowelTeams:[], blends:[], morphology:[], irregularWords:[] },
+    checkpoints: book.checkpoints || {},
+  });
+  // Rebuild word list and boundaries for new book
+  rebuildBookWords();
+  // Update session UI
+  document.getElementById('summary-content') && (document.getElementById('summary-content').innerHTML = '');
+  renderLibrary();
+  // Flash confirmation
+  const btn = document.querySelector(`[onclick="selectBook('${id}',event)"]`);
+  if (btn) { btn.textContent = '✓'; setTimeout(() => { btn.textContent = '▶'; }, 1200); }
+}
+
+function filterBooks(q) {
+  searchQuery = q;
+  renderBookList();
+}
+
+function setFilter(level, el) {
+  activeFilter = level;
+  document.querySelectorAll('.lib-filter').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderBookList();
+}
+
+function showAddBook() {
+  const panel = document.getElementById('lib-custom-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function addCustomBook() {
+  const title = document.getElementById('custom-title').value.trim();
+  const author = document.getElementById('custom-author').value.trim();
+  const level = document.getElementById('custom-level').value.trim() || 'K';
+  const ages = document.getElementById('custom-age').value.trim() || '5–8';
+  if (!title) { alert('Please enter a title.'); return; }
+  const newBook = {
+    id: 'custom_' + Date.now(), emoji: '📖', title, author, level, ages,
+    themes: [], trickyWords: [], vocab: [], checkpoints: {}, custom: true
+  };
+  LIBRARY.unshift(newBook);
+  selectBook(newBook.id, null);
+  document.getElementById('lib-custom-panel').style.display = 'none';
+  document.getElementById('custom-title').value = '';
+  document.getElementById('custom-author').value = '';
+  document.getElementById('custom-level').value = '';
+  document.getElementById('custom-age').value = '';
+  renderLibrary();
+}
+
+// ── End-of-session summary ─────────────────────────────────────
+async function generateSessionSummary() {
+  // Switch to summary screen immediately with spinner
+  switchTab('summary');
+  document.getElementById('tab-bar').style.display = 'none';
+  document.getElementById('summary-content').innerHTML = `
+    <div class="generating-summary">
+      <div class="gen-spinner"></div>
+      <div class="gen-label">Generating Noa's session summary…<br>This takes just a moment.</div>
+    </div>`;
+
+  const duration = formatTime(timerSecs);
+  const coachingCount = sessionLog.filter(e => e.type !== 'resolved' && e.type !== 'comprehension').length;
+  const cpCount = comprehensionScores.length;
+  const cpCorrect = comprehensionScores.filter(Boolean).length;
+  const struggles = sessionLog.filter(e => e.type !== 'resolved').map(e => `${e.type}: "${e.word}" — ${e.note}`).join('\n') || 'No struggles flagged';
+  const savedStrats = savedStrategies.map(s => s.strategyName).join(', ') || 'None saved this session';
+
+  const systemPrompt = `You are a Science of Reading expert generating a parent-facing post-session reading summary for a shared reading app.
+
+The child is Noa, age 7, Grade 2, reading level K.
+Book this session: "${BOOK.title}" by ${BOOK.author}.
+
+Generate a warm, specific, actionable session summary for the parent. Use precise Science of Reading language but explain it clearly.
+
+Return ONLY valid JSON:
+{
+  "sessionEmoji": "one emoji capturing the session's overall feel",
+  "sessionTitle": "a warm 4-6 word title for this session, e.g. 'A strong fluency session'",
+  "sessionSummary": "2-3 sentences: what happened overall — what Noa did well and what she worked on",
+  "moments": [
+    { "icon": "emoji", "title": "short title", "desc": "1-2 sentences: what happened and what it means diagnostically", "time": "time marker" }
+  ],
+  "primaryFocus": {
+    "title": "The #1 thing to focus on next session",
+    "desc": "2-3 sentences: what the parent should do, why, and how — specific and actionable"
+  },
+  "secondaryFocus": {
+    "title": "A secondary area to keep building",
+    "desc": "1-2 sentences"
+  },
+  "parentWin": "One sentence celebrating something the parent did well as a reading coach this session",
+  "skillDeltas": {
+    "decoding": number between -5 and +5,
+    "fluency": number between -5 and +5,
+    "comprehension": number between -5 and +5,
+    "vocabulary": number between -5 and +5
+  }
+}`;
+
+  const userPrompt = `Session data:
+- Duration: ${duration}
+- Book: ${BOOK.title} by ${BOOK.author}
+- Coaching moments: ${coachingCount}
+- Comprehension checkpoints: ${cpCount} (${cpCorrect} correct)
+- Struggles logged:\n${struggles}
+- Strategies saved to Learn tab: ${savedStrats}
+- Words heard: ${transcript.length}
+
+Generate the session summary JSON.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+    const data = await response.json();
+    if (data.content && data.content[0]) {
+      let raw = data.content[0].text.trim().replace(/```json|```/g, '').trim();
+      const summary = JSON.parse(raw);
+      renderSummary(summary, duration, coachingCount, cpCount, cpCorrect);
+    }
+  } catch (err) {
+    console.error('Summary error:', err);
+    renderFallbackSummary(duration, coachingCount, cpCount, cpCorrect);
+  }
+}
+
+function renderSummary(s, duration, coaching, cpTotal, cpCorrect) {
+  const deltas = s.skillDeltas || {};
+  const skillRows = [
+    { name: 'Decoding',       color: '#1D9E75', key: 'decoding',       base: 72 },
+    { name: 'Fluency',        color: '#378ADD', key: 'fluency',         base: 58 },
+    { name: 'Comprehension',  color: '#7F77DD', key: 'comprehension',   base: 65 },
+    { name: 'Vocabulary',     color: '#D85A30', key: 'vocabulary',      base: 50 },
+  ].map(sk => {
+    const d = deltas[sk.key] || 0;
+    const newVal = Math.min(100, Math.max(10, sk.base + d));
+    const dClass = d > 0 ? 'delta-up' : d < 0 ? 'delta-down' : 'delta-same';
+    const dLabel = d > 0 ? `+${d}` : d < 0 ? `${d}` : '—';
+    return `<div class="summary-skill-row">
+      <div class="summary-skill-name">${sk.name}</div>
+      <div class="summary-skill-track"><div class="summary-skill-fill" style="width:${newVal}%;background:${sk.color};"></div></div>
+      <div class="summary-skill-delta ${dClass}">${dLabel}</div>
+    </div>`;
+  }).join('');
+
+  const momentsHTML = (s.moments || []).map(m => `
+    <div class="moment-card">
+      <div class="moment-icon">${m.icon}</div>
+      <div>
+        <div class="moment-title">${m.title}</div>
+        <div class="moment-desc">${m.desc}</div>
+        <div class="moment-time">${m.time}</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('summary-content').innerHTML = `
+    <div class="summary-hero">
+      <div class="summary-emoji">${s.sessionEmoji}</div>
+      <div class="summary-title">${s.sessionTitle}</div>
+      <div class="summary-sub">${s.sessionSummary}</div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-val">${duration}</div><div class="sum-stat-label">Session time</div></div>
+        <div class="sum-stat"><div class="sum-stat-val">${coaching}</div><div class="sum-stat-label">Coaching moments</div></div>
+        <div class="sum-stat"><div class="sum-stat-val">${cpTotal > 0 ? Math.round((cpCorrect/cpTotal)*100)+'%' : '—'}</div><div class="sum-stat-label">Comprehension accuracy</div></div>
+      </div>
+    </div>
+
+    ${momentsHTML ? `<div class="summary-section"><div class="summary-section-title">What happened</div>${momentsHTML}</div>` : ''}
+
+    <div class="summary-section">
+      <div class="summary-section-title">Focus for next time</div>
+      <div class="focus-card primary">
+        <div class="focus-eyebrow">Primary focus</div>
+        <div class="focus-title">${s.primaryFocus?.title || 'Keep building fluency'}</div>
+        <div class="focus-desc">${s.primaryFocus?.desc || ''}</div>
+      </div>
+      <div class="focus-card secondary">
+        <div class="focus-eyebrow">Also keep working on</div>
+        <div class="focus-title">${s.secondaryFocus?.title || 'Comprehension checkpoints'}</div>
+        <div class="focus-desc">${s.secondaryFocus?.desc || ''}</div>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <div class="summary-section-title">Noa's skill movement</div>
+      ${skillRows}
+    </div>
+
+    ${s.parentWin ? `<div class="focus-card secondary" style="margin-bottom:20px;">
+      <div class="focus-eyebrow">Your coaching win 🌟</div>
+      <div class="focus-desc">${s.parentWin}</div>
+    </div>` : ''}
+
+    <div class="summary-cta">
+      <button class="sum-btn secondary" onclick="doneSummary()">Back to home</button>
+      <button class="sum-btn primary" onclick="startSession()">Read again</button>
+    </div>`;
+
+  document.getElementById('tab-bar').style.display = 'flex';
+}
+
+function renderFallbackSummary(duration, coaching, cpTotal, cpCorrect) {
+  document.getElementById('summary-content').innerHTML = `
+    <div class="summary-hero">
+      <div class="summary-emoji">📖</div>
+      <div class="summary-title">Great reading session!</div>
+      <div class="summary-sub">Noa read ${BOOK.title} with you for ${duration}. Keep up the great work!</div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-val">${duration}</div><div class="sum-stat-label">Session time</div></div>
+        <div class="sum-stat"><div class="sum-stat-val">${coaching}</div><div class="sum-stat-label">Coaching moments</div></div>
+        <div class="sum-stat"><div class="sum-stat-val">${cpTotal > 0 ? Math.round((cpCorrect/cpTotal)*100)+'%' : '—'}</div><div class="sum-stat-label">Comprehension</div></div>
+      </div>
+    </div>
+    <div class="summary-cta">
+      <button class="sum-btn secondary" onclick="doneSummary()">Back to home</button>
+      <button class="sum-btn primary" onclick="startSession()">Read again</button>
+    </div>`;
+  document.getElementById('tab-bar').style.display = 'flex';
+}
+
+function doneSummary() {
+  switchTab('home');
+  document.getElementById('tab-bar').style.display = 'flex';
+}
+
+// ── Book: Giraffes Can't Dance ─────────────────────────────────
+// Reference text for the AI — used to detect deviations from actual words.
+// Structured as pages/spreads so the AI knows what Noa should be reading.
+const BOOK = {
+  title: "Giraffes Can't Dance",
+  author: "Giles Andreae",
+  level: "K",
+  ageRange: "5–8",
+  themes: ["self-confidence", "individuality", "finding your own music", "perseverance"],
+  vocabulary: ["warthogs","chimps","rhinoceros","velvet","elegant","swaying","graceful","moonlight","cricket","trembling","supposed","different","wonderful"],
+  // Key tricky words by phonics challenge type
+  trickyWords: {
+    multisyllabic: ["rhinoceros","gracefully","beautiful","wonderful","elegantly","different","Africa","animals","together","suddenly"],
+    vowelTeams: ["moonlight","creatures","gleaming","swaying","wailed","groaned","raised"],
+    blends: ["cricket","trembling","straight","spindly","pranced","gripped","bravely","clapped"],
+    morphology: ["laughed","danced","waltzing","jumping","graceful","wonderful","different"],
+    irregularWords: ["were","there","where","their","because","beautiful","people"],
+  },
+  // The full text, spread by spread (paraphrased for reference — not verbatim reproduction)
+  spreads: [
+    { id: 1, text: "In Africa they have a Jungle Dance. All the animals come and they skip and they prance.", checkpointAfter: false },
+    { id: 2, text: "The warthogs waltz. The chimps cha-cha. The lions do the tango.", checkpointAfter: false },
+    { id: 3, text: "But Gerald the giraffe has really long legs and a very long neck, and he feels sad because when it comes to dancing, he was really very bad.", checkpointAfter: true },
+    { id: 4, text: "His legs were too skimpy and his neck was too long. And Gerald did not feel he'd ever belong.", checkpointAfter: false },
+    { id: 5, text: "The warthogs snorted. The chimps all sneered. 'Giraffes can't dance!' they wailed and jeered.", checkpointAfter: true },
+    { id: 6, text: "Gerald walked away with tears in his eyes. He stood in a clearing under the moonlit skies.", checkpointAfter: false },
+    { id: 7, text: "Then a little cricket spoke to him. 'Sometimes when you're different you just need a different song.'", checkpointAfter: true },
+    { id: 8, text: "Gerald listened to the swaying grass and the rustling trees and soon he felt the music in the breeze.", checkpointAfter: false },
+    { id: 9, text: "And Gerald danced. He swayed and shimmied. He pranced and spun. He was the most beautiful dancer under the moon and stars.", checkpointAfter: true },
+    { id: 10, text: "All the animals watched in amazement. 'We were wrong!' they cheered. 'We can all dance if we just find our music!'", checkpointAfter: false },
+  ],
+  // Comprehension checkpoints keyed to spread
+  checkpoints: {
+    3: { type: "character motivation", q: "Why does Gerald feel sad at the beginning of the story?" },
+    5: { type: "inference",           q: "How do you think Gerald felt when the other animals laughed at him? What tells you that?" },
+    7: { type: "vocabulary in context", q: "The cricket says Gerald needs 'a different song.' What do you think that really means?" },
+    9: { type: "causal reasoning",    q: "What changed for Gerald? What made him able to dance?" },
+  }
+};
+
+// ── Session state ──────────────────────────────────────────────
+let isListening = false;
+let recognition = null;
+let timerInterval = null;
+let timerSecs = 0;
+let transcript = [];           // final confirmed words
+let rawEvents = [];            // full diagnostic log
+let currentCoachData = null;
+let escalationIndex = 0;
+let sessionLog = [];
+let waveInterval = null;
+let analysisTimeout = null;
+let lastSpeechTime = null;
+let interimBuffer = '';
+let interimHistory = [];
+let wordBookIndex = 0;         // tracks position in the book text word by word
+let analysisInFlight = false;
+let firedCheckpoints = new Set(); // spread IDs where checkpoint already fired
+const ANALYSIS_DELAY = 2200;
+const PAUSE_THRESHOLD = 1800;
+const MIN_WORDS_TO_ANALYZE = 2; // lower threshold — catch errors early
+
+// ── Precompute spread word boundaries ─────────────────────────
+// For each spread, record the word index range so we know exactly
+// when Noa crosses into it based on wordBookIndex.
+function buildSpreadBoundaries(spreads) {
+  let cursor = 0;
+  return (spreads || []).map(spread => {
+    const words = spread.text.toLowerCase().replace(/[.,!?'"]/g,'').split(/\s+/);
+    const start = cursor;
+    const end = cursor + words.length - 1;
+    cursor += words.length;
+    return { id: spread.id, start, end, checkpointAfter: spread.checkpointAfter };
+  });
+}
+
+let SPREAD_BOUNDARIES = buildSpreadBoundaries(BOOK.spreads);
+
+// Flat word list from book spreads for position tracking
+let BOOK_WORDS = (BOOK.spreads || [])
+  .map(s => s.text.toLowerCase().replace(/[.,!?'"]/g,'').split(/\s+/))
+  .flat();
+
+// Rebuild when book changes
+function rebuildBookWords() {
+  BOOK_WORDS = (BOOK.spreads || [])
+    .map(s => s.text.toLowerCase().replace(/[.,!?'"]/g,'').split(/\s+/))
+    .flat();
+  SPREAD_BOUNDARIES = buildSpreadBoundaries(BOOK.spreads);
+  wordBookIndex = 0;
+  firedCheckpoints = new Set();
+}
+
+// ── Check if wordBookIndex just crossed a checkpoint boundary ──
+function checkSpreadPosition(newIndex) {
+  for (const boundary of SPREAD_BOUNDARIES) {
+    if (!boundary.checkpointAfter) continue;
+    if (firedCheckpoints.has(boundary.id)) continue;
+    // Fire when Noa has read past the end of this spread
+    if (newIndex > boundary.end) {
+      firedCheckpoints.add(boundary.id);
+      // Small delay so the current coaching sheet isn't open
+      setTimeout(() => {
+        if (!document.getElementById('sheet-overlay').classList.contains('open') &&
+            !document.getElementById('cp-overlay').classList.contains('open')) {
+          triggerCheckpointForSpread(boundary.id);
+        } else {
+          // Queue it — retry once current sheet closes
+          const retryId = boundary.id;
+          const retryInterval = setInterval(() => {
+            if (!document.getElementById('sheet-overlay').classList.contains('open') &&
+                !document.getElementById('cp-overlay').classList.contains('open')) {
+              clearInterval(retryInterval);
+              triggerCheckpointForSpread(retryId);
+            }
+          }, 2000);
+        }
+      }, 1200);
+      break;
+    }
+  }
+}
+
+function triggerCheckpointForSpread(spreadId) {
+  const wasListening = isListening;
+  if (wasListening) pauseListeningForCheckpoint();
+  document.getElementById('cp-overlay').classList.add('open');
+  document.getElementById('cp-loading').classList.add('active');
+  document.getElementById('cp-question-box').style.display = 'none';
+  document.getElementById('cp-answer-area').style.display = 'none';
+  document.getElementById('cp-feedback-box').classList.remove('visible');
+  document.getElementById('cp-followup-box').classList.remove('visible');
+  document.getElementById('cp-done-btn').classList.remove('visible');
+  document.getElementById('cp-header-sub').textContent = 'Generating question…';
+  generateCheckpointQuestion(wasListening, spreadId);
+}
+
+
+// ── Diagnostic helpers ─────────────────────────────────────────
+
+function detectRepetitions(words) {
+  const reps = [];
+  for (let i = 1; i < words.length; i++) {
+    if (words[i].toLowerCase() === words[i-1].toLowerCase()) {
+      reps.push(words[i]);
+    }
+  }
+  // Also check: first word of this utterance vs last word of previous
+  if (transcript.length > 0 && words.length > 0) {
+    const lastPrev = transcript[transcript.length - 1]?.toLowerCase();
+    if (lastPrev && words[0].toLowerCase() === lastPrev) {
+      reps.push(words[0]);
+    }
+  }
+  return reps;
+}
+
+function detectSelfCorrections(history, finalText) {
+  if (history.length < 2) return [];
+  const corrections = [];
+  // Look for interim words that differ from final
+  const interimWords = new Set(
+    history.flatMap(h => h.text.toLowerCase().split(/\s+/))
+  );
+  const finalWords = new Set(finalText.toLowerCase().split(/\s+/));
+  interimWords.forEach(w => {
+    if (w && !finalWords.has(w) && w.length > 2) {
+      corrections.push(w);
+    }
+  });
+  return corrections.slice(0, 3);
+}
+
+function detectSubstitutions(spokenWords) {
+  if (!BOOK_WORDS.length) return [];
+  const subs = [];
+
+  // Use a much wider window — position tracking can drift
+  // Search ±8 words around current index for the best alignment
+  const windowStart = Math.max(0, wordBookIndex - 4);
+  const windowEnd = Math.min(BOOK_WORDS.length, windowStart + spokenWords.length + 12);
+  const expected = BOOK_WORDS.slice(windowStart, windowEnd);
+
+  // Align spoken words to expected using best-match sliding window
+  let bestOffset = 0;
+  let bestScore = -1;
+  for (let offset = 0; offset <= expected.length - spokenWords.length; offset++) {
+    let score = 0;
+    spokenWords.forEach((w, i) => {
+      const exp = expected[offset + i];
+      if (exp && w.toLowerCase().replace(/[^a-z]/g,'') === exp.replace(/[^a-z]/g,'')) score++;
+    });
+    if (score > bestScore) { bestScore = score; bestOffset = offset; }
+  }
+
+  // Now check each word against its aligned expected word
+  spokenWords.forEach((spoken, i) => {
+    const exp = expected[bestOffset + i];
+    if (!exp) return;
+    const spokenClean = spoken.toLowerCase().replace(/[^a-z]/g, '');
+    const expClean = exp.replace(/[^a-z]/g, '');
+    if (spokenClean === expClean) return; // exact match — fine
+    if (expClean.length < 2 || spokenClean.length < 2) return; // skip tiny words
+
+    // Flag ANY substitution of a content word — not just first-letter guesses
+    // "arms" for "neck", "happy" for "sad" are all diagnostically meaningful
+    const isContentWord = !['a','an','the','and','but','or','in','on','at','to','of','it','is','was','he','she','they','his','her','its','for','with','that','this','as','be','by','not','are','were','had','has','have'].includes(expClean);
+    if (isContentWord) {
+      subs.push({ spoken: spokenClean, expected: expClean });
+    }
+  });
+  return subs;
+}
+
+function detectFillers(history) {
+  const fillerPattern = /\b(uh|um|er|ah|like|hmm|hm)\b/gi;
+  const fillers = [];
+  history.forEach(h => {
+    const matches = h.text.match(fillerPattern);
+    if (matches) fillers.push(...matches);
+  });
+  return fillers;
+}
+
+function advanceBookPosition(spokenWords, currentIdx) {
+  if (!BOOK_WORDS.length) return currentIdx;
+  let best = currentIdx;
+  let bestScore = -1;
+  // Wider sliding window — ±6 to account for drift from substitutions
+  for (let offset = -3; offset <= 6; offset++) {
+    const pos = currentIdx + offset;
+    if (pos < 0 || pos >= BOOK_WORDS.length) continue;
+    let score = 0;
+    spokenWords.forEach((w, i) => {
+      const bw = BOOK_WORDS[pos + i];
+      if (!bw) return;
+      if (w.toLowerCase().replace(/[^a-z]/g,'') === bw.replace(/[^a-z]/g,'')) score++;
+    });
+    if (score > bestScore) { bestScore = score; best = pos + spokenWords.length; }
+  }
+  const newIndex = Math.min(best, BOOK_WORDS.length - 1);
+  if (newIndex > currentIdx) checkSpreadPosition(newIndex);
+  return newIndex;
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m+1}, (_, i) => [i, ...Array(n).fill(0)]);
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+// ── Transcript rendering ───────────────────────────────────────
+function renderTranscript(words) {
+  const box = document.getElementById('transcript-box');
+  if (!words.length) {
+    box.innerHTML = '<span class="transcript-placeholder">Words will appear here as Noa reads aloud...</span>';
+    return;
+  }
+  box.innerHTML = words.map((w, i) => `<span class="transcript-word" onclick="tapWord('${w}')" style="cursor:pointer;" title="Tap to flag">${w} </span>`).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+function renderTranscriptWithInterim(words, interim) {
+  const box = document.getElementById('transcript-box');
+  const finalHtml = words.map(w => `<span class="transcript-word">${w} </span>`).join('');
+  const interimHtml = interim ? `<span style="color:#B4B2A9;font-style:italic;">${interim}</span>` : '';
+  box.innerHTML = (finalHtml || '') + interimHtml ||
+    '<span class="transcript-placeholder">Words will appear here as Noa reads aloud...</span>';
+  box.scrollTop = box.scrollHeight;
+}
+
+// ── Schedule analysis ──────────────────────────────────────────
+function scheduleAnalysis(diagEvent, spokenText) {
+  clearTimeout(analysisTimeout);
+  if (analysisInFlight) return;
+
+  // Immediately flag obvious signals without waiting
+  const signals = gatherSignals(diagEvent);
+  if (signals.shouldFlag) {
+    analysisTimeout = setTimeout(() => {
+      analyzeWithClaude(spokenText, signals);
+    }, 400); // fast response for clear signals
+    return;
+  }
+
+  // Otherwise wait for more context
+  if (transcript.length >= MIN_WORDS_TO_ANALYZE) {
+    analysisTimeout = setTimeout(() => {
+      analyzeWithClaude(spokenText, signals);
+    }, ANALYSIS_DELAY);
+  }
+}
+
+function gatherSignals(event) {
+  const signals = {
+    repetitions: event.repetitions || [],
+    selfCorrections: event.selfCorrections || [],
+    substitutions: event.substitutions || [],
+    fillers: event.fillers || [],
+    pauseMs: event.pauseBefore || 0,
+    confidence: event.confidence || 1,
+    lowConfWords: event.lowConfWords || [],
+    wordGaps: event.wordGaps || [],
+    alternatives: event.alternatives || [],
+    shouldFlag: false,
+    summary: []
+  };
+
+  if (signals.repetitions.length > 0) {
+    signals.shouldFlag = true;
+    signals.summary.push("Repeated word(s): \"" + signals.repetitions.join('", "') + "\" — likely a decoding block causing restart");
+  }
+  if (signals.fillers.length > 0) {
+    signals.shouldFlag = true;
+    signals.summary.push(`Hesitation fillers detected: ${signals.fillers.join(', ')} — indicates decoding difficulty or working memory strain`);
+  }
+  if (signals.selfCorrections.length > 0) {
+    signals.shouldFlag = true;
+    signals.summary.push(`Self-correction: initially said "${signals.selfCorrections.join('", "')}" before final word`);
+  }
+  if (signals.substitutions.length > 0) {
+    signals.shouldFlag = true;
+    signals.substitutions.forEach(s =>
+      signals.summary.push(`Word substitution: said "${s.spoken}" — expected "${s.expected}" (may indicate orthographic mapping gap or comprehension-driven guess)`)
+    );
+  }
+  if (signals.pauseMs > PAUSE_THRESHOLD) {
+    signals.shouldFlag = true;
+    signals.summary.push(`Long pause (${Math.round(signals.pauseMs/100)/10}s) before this utterance`);
+  }
+  // AssemblyAI-specific: word-level confidence
+  if (signals.lowConfWords.length > 0) {
+    signals.shouldFlag = true;
+    signals.lowConfWords.forEach(w =>
+      signals.summary.push(`Low confidence (${Math.round(w.confidence*100)}%) on word "${w.text}" — probable mispronunciation or disfluency`)
+    );
+  }
+  // AssemblyAI-specific: mid-utterance gaps between words
+  if (signals.wordGaps.length > 0) {
+    signals.shouldFlag = true;
+    signals.wordGaps.forEach(g =>
+      signals.summary.push(`Mid-utterance pause (${Math.round(g.ms)}ms) between "${g.before}" and "${g.after}" — hesitation on upcoming word`)
+    );
+  }
+
+  // Check recent raw events for long silences
+  const recentSilence = rawEvents.slice(-3).find(e => e.type === 'long-silence' && e.ms > 3000);
+  if (recentSilence) {
+    signals.shouldFlag = true;
+    signals.summary.push(`Long silence (${Math.round(recentSilence.ms/100)/10}s) — possible decoding block`);
+  }
+
+  return signals;
+}
+
+// ── Claude API call ────────────────────────────────────────────
+async function analyzeWithClaude(spokenText, signals) {
+  if (analysisInFlight) return;
+  analysisInFlight = true;
+  document.getElementById('loading-row').classList.add('active');
+
+  const trickyWordList = [
+    ...BOOK.trickyWords.multisyllabic,
+    ...BOOK.trickyWords.vowelTeams,
+    ...BOOK.trickyWords.blends,
+    ...BOOK.trickyWords.morphology,
+    ...BOOK.trickyWords.irregularWords,
+  ].join(', ');
+
+  const expectedWindow = BOOK_WORDS.slice(Math.max(0, wordBookIndex - 4), wordBookIndex + 12).join(' ');
+  const diagReport = signals?.summary?.length
+    ? 'DIAGNOSTIC SIGNALS DETECTED:\n' + signals.summary.map(s => '• ' + s).join('\n')
+    : 'No specific signals — assess from spoken text and expected book text.';
+
+  const systemPrompt = `You are an AI reading intervention engine grounded in the Science of Reading.
+The child (Noa, age 7, Grade 2, level K) is reading "${BOOK.title}" by ${BOOK.author}.
+Tricky words in this book: ${trickyWordList || 'see vocabulary'}.
+
+CRITICAL: You are given pre-analyzed diagnostic signals captured from the RAW audio stream — repetitions, hesitation fillers, self-corrections, substitutions, pauses, and confidence scores. These are captured BEFORE browser auto-correction. Trust them as primary evidence of struggle. The "spoken text" may look clean because the browser corrected it.
+
+Return ONLY valid JSON:
+{
+  "struggleDetected": true or false,
+  "struggleType": "decoding" | "fluency" | "comprehension" | "vocabulary" | "none",
+  "struggleCategory": "exact category name",
+  "flaggedWord": "the book word Noa struggled with",
+  "detectedSub": "precise one-phrase diagnosis e.g. 'R-controlled vowel misread'",
+  "whatThisMeans": ["bullet 1: what this error pattern usually indicates", "bullet 2", "bullet 3 max"],
+  "practiceWords": ["3-5 similar words for optional practice, e.g. if error was on r-controlled vowel: her, bird, turn"],
+  "substitutions": [{"spoken": "what child said", "expected": "what book said"}],
+  "interventionLevel": 1,
+  "prompts": [
+    { "level": 1, "text": "Exact warm words for parent — least intrusive", "goalNote": "goal" },
+    { "level": 2, "text": "More explicit", "goalNote": "goal" },
+    { "level": 3, "text": "Structured support", "goalNote": "goal" },
+    { "level": 4, "text": "Guided model", "goalNote": "goal" },
+    { "level": 5, "text": "Full model + reread", "goalNote": "restore fluency" }
+  ],
+  "teachingPoint": {
+    "strategyName": "short strategy name",
+    "strategyIcon": "emoji",
+    "category": "exact SoR category",
+    "principle": "Core SoR principle in one sentence",
+    "transferMove": "2-3 sentences: what parent can do independently next time"
+  }
+}
+
+CATEGORIES — Decoding: Phonemic Awareness, Grapheme-Phoneme Confusion, Orthographic Mapping, Blending Difficulty, Syllable Confusion, Morphology Weakness, Vowel Team Confusion, Irregular Word Confusion, Suffix/Prefix Confusion, Consonant Blend Confusion, Working Memory Overload, Guessing from First Letter, Fluency Breakdown, Slow Decoding / Automaticity
+Comprehension: Literal Misunderstanding, Unsupported Inference, Vocabulary Confusion, Weak Evidence Use, Recall / Attention Error, Background Knowledge Gap, Comprehension Monitoring Failure, Syntax Confusion, Inferencing Difficulty, Decoding Overload → Comprehension Collapse
+
+SIGNAL INTERPRETATION:
+- Repeated word → decoding block, child restarted
+- Hesitation fillers (uh, um, er) → decoding difficulty or working memory strain  
+- Self-correction (said X before Y) → note what was corrected and what it reveals
+- Substitution (said "tree" for "three") → guessing from first letter / orthographic gap
+- Long pause → decoding block on upcoming word
+- Low confidence → probable mispronunciation
+- NO signals → set struggleDetected: false`;
+
+  const userPrompt = diagReport + '\n\nSpoken text (browser-cleaned): "' + spokenText + '"\nExpected book text here: "' + expectedWindow + '"\n\nReturn JSON.';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+    const data = await response.json();
+    document.getElementById('loading-row').classList.remove('active');
+    analysisInFlight = false;
+    if (data.content && data.content[0]) {
+      let raw = data.content[0].text.trim().replace(/```json|```/g, '').trim();
+      const result = JSON.parse(raw);
+      if (result.struggleDetected && result.struggleType !== 'none') {
+        showCoachSheet(result);
+        logEvent(result.struggleType, result.flaggedWord || 'word', result.detectedSub);
+      }
+    }
+  } catch (err) {
+    document.getElementById('loading-row').classList.remove('active');
+    analysisInFlight = false;
+    console.error('Claude API error:', err);
+  }
+}
+
+
+// ── Tap a word in transcript to flag it ───────────────────────
+function tapWord(word) {
+  const context = transcript.slice(-12).join(' ');
+  analyzeWithClaude(context, {
+    shouldFlag: true,
+    summary: [`Parent tapped word "${word}" — possible error or difficulty at this point`]
+  });
+}
+
+// ── Manual flag (parent taps) ─────────────────────────────────
+function manualFlag() {
+  const text = transcript.slice(-12).join(' ');
+  if (text.length > 3) {
+    analyzeWithClaude(text, {
+      shouldFlag: true,
+      summary: ['Parent manually flagged a struggle at this point in the text']
+    });
+  } else {
+    showCoachSheet({
+      struggleType: 'decoding',
+      struggleCategory: 'Guessing from First Letter',
+      flaggedWord: 'this word',
+      detectedSub: 'Parent flagged a struggle',
+      interventionLevel: 1,
+      prompts: [
+        { level: 1, text: '"Look through the whole word, not just the start."', goalNote: 'Prompt self-monitoring' },
+        { level: 2, text: '"Find the vowel first — what sound does it make?"', goalNote: 'Cue phonics knowledge' },
+        { level: 3, text: '"Break it into chunks — say each part slowly."', goalNote: 'Reduce working memory load' },
+        { level: 4, text: '"Let\'s blend it together: tap each sound, then sweep."', goalNote: 'Guided blending support' },
+        { level: 5, text: '"The word is ____. Say it with me, then reread the sentence."', goalNote: 'Full model + fluency restoration' }
+      ],
+      teachingPoint: {
+        strategyName: 'Look-through-the-word',
+        strategyIcon: '👁️',
+        category: 'Guessing from First Letter',
+        principle: 'Children who guess from the first letter haven\'t yet learned to process the full orthographic pattern of a word — they need to be trained to read through every grapheme.',
+        transferMove: 'Next time you notice a substitution — like "train" for "tree" — say "Check the middle" before giving any more help. You\'re teaching her to trust the letters, not her prediction.'
+      }
+    });
+  }
+}
+
+// ── Show coaching sheet ────────────────────────────────────────
+function showCoachSheet(data) {
+  currentCoachData = data;
+  escalationIndex = (data.interventionLevel || 1) - 1;
+  tpOpen = false;
+  document.getElementById('tp-body').classList.remove('open');
+  document.getElementById('tp-chevron').classList.remove('open');
+  document.getElementById('tp-save-btn').classList.remove('saved');
+  document.getElementById('tp-save-btn').textContent = '＋ Save to my strategies';
+  renderPrompt(data, escalationIndex);
+  document.getElementById('sheet-overlay').classList.add('open');
+}
+
+let tpOpen = false;
+
+function toggleTeachingPoint() {
+  tpOpen = !tpOpen;
+  document.getElementById('tp-body').classList.toggle('open', tpOpen);
+  document.getElementById('tp-chevron').classList.toggle('open', tpOpen);
+}
+
+function renderPrompt(data, idx) {
+  const prompt = (data.prompts || [])[Math.min(idx, (data.prompts?.length || 1) - 1)];
+
+  // Target word vs said
+  const sub = data.substitutions?.[0];
+  document.getElementById('error-target-word').textContent = sub?.expected || data.flaggedWord || '—';
+  document.getElementById('error-said-word').textContent = sub?.spoken || data.flaggedWord || '—';
+
+  // Error pattern
+  document.getElementById('error-pattern-name').textContent = data.struggleCategory || data.detectedSub || '—';
+
+  // What this usually means
+  const meansList = document.getElementById('error-means-list');
+  const means = data.whatThisMeans || [data.detectedSub || 'Reading difficulty detected'];
+  meansList.innerHTML = means.map(m =>
+    `<div class="error-means-item"><div class="error-means-dot"></div><span>${m}</span></div>`
+  ).join('');
+
+  // What to say
+  document.getElementById('prompt-text').textContent = prompt?.text || '—';
+
+  // Teaching point
+  const tp = data.teachingPoint;
+  document.getElementById('tp-transfer').textContent = tp?.transferMove || '—';
+  document.getElementById('tp-strategy-name').textContent = tp?.strategyName || '';
+  document.getElementById('tp-toggle-icon').textContent = tp?.strategyIcon || '📖';
+  document.getElementById('tp-category').textContent = tp?.category || '';
+  document.getElementById('tp-principle').textContent = tp?.principle || '';
+
+  // Practice words
+  const practiceWords = data.practiceWords || [];
+  const practiceRow = document.getElementById('error-practice-row');
+  if (practiceWords.length > 0) {
+    document.getElementById('error-practice-words').innerHTML =
+      practiceWords.map(w => `<span class="practice-word">${w}</span>`).join('');
+    practiceRow.style.display = 'block';
+  } else {
+    practiceRow.style.display = 'none';
+  }
+
+  // Escalate button
+  const escalateBtn = document.getElementById('escalate-btn');
+  if (idx >= Math.min((data.prompts?.length || 1) - 1, 4)) {
+    escalateBtn.disabled = true; escalateBtn.style.opacity = '0.4';
+  } else {
+    escalateBtn.disabled = false; escalateBtn.style.opacity = '1';
+  }
+}
+
+function escalatePrompt() {
+  if (!currentCoachData) return;
+  const max = Math.min((currentCoachData.prompts?.length || 3) - 1, 4);
+  escalationIndex = Math.min(escalationIndex + 1, max);
+  renderPrompt(currentCoachData, escalationIndex);
+}
+
+function dismissSheet(outcome) {
+  document.getElementById('sheet-overlay').classList.remove('open');
+  if (outcome === 'worked') {
+    logEvent('resolved', currentCoachData?.flaggedWord || '', 'Coaching prompt worked');
+  }
+  currentCoachData = null;
+  escalationIndex = 0;
+  tpOpen = false;
+}
+
+function closeSheetOnBackdrop(e) {
+  if (e.target === document.getElementById('sheet-overlay')) {
+    dismissSheet('skip');
+  }
+}
+
+// ── Save strategy to Learn tab ────────────────────────────────
+let savedStrategies = [];
+
+function saveToLearnTab() {
+  if (!currentCoachData?.teachingPoint) return;
+  const tp = currentCoachData.teachingPoint;
+  const type = currentCoachData.struggleType;
+
+  // Avoid duplicates by strategyName
+  if (savedStrategies.find(s => s.strategyName === tp.strategyName)) {
+    // Just increment use count
+    savedStrategies = savedStrategies.map(s =>
+      s.strategyName === tp.strategyName ? { ...s, timesUsed: (s.timesUsed || 1) + 1 } : s
+    );
+    renderLearnTab();
+    const btn = document.getElementById('tp-save-btn');
+    btn.textContent = '✓ Already in your strategies';
+    btn.classList.add('saved');
+    return;
+  }
+
+  savedStrategies.unshift({
+    strategyName: tp.strategyName,
+    strategyIcon: tp.strategyIcon || '📖',
+    category: tp.category,
+    principle: tp.principle,
+    transferMove: tp.transferMove,
+    type,
+    timesUsed: 1,
+    savedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  });
+
+  renderLearnTab();
+
+  const btn = document.getElementById('tp-save-btn');
+  btn.textContent = '✓ Saved!';
+  btn.classList.add('saved');
+
+  // Show badge on Learn tab
+  const badge = document.getElementById('learn-badge');
+  if (badge) badge.classList.add('visible');
+}
+
+function renderLearnTab() {
+  const list = document.getElementById('saved-strategies-list');
+  const empty = document.getElementById('learn-empty');
+
+  if (savedStrategies.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = savedStrategies.map(s => `
+    <div class="strategy-card ${s.type === 'fluency' ? 'fluency' : s.type === 'comprehension' || s.type === 'vocabulary' ? 'comprehension' : ''}">
+      <div class="sc-top">
+        <div>
+          <div class="sc-category">${s.category}</div>
+          <div class="sc-name">${s.strategyIcon} ${s.strategyName}</div>
+        </div>
+        <div class="sc-times">used ${s.timesUsed}×</div>
+      </div>
+      <div class="sc-principle">${s.principle}</div>
+      <div class="sc-transfer">"${s.transferMove}"</div>
+    </div>
+  `).join('');
+}
+
+// ── Session log ────────────────────────────────────────────────
+function logEvent(type, word, note) {
+  const elapsed = formatTime(timerSecs);
+  sessionLog.unshift({ type, word, note, time: elapsed });
+}
+
+// ── Toggle listening ─────────────────────────────────────────────
+function toggleListening() {
+  if (isListening) stopListening();
+  else startListeningMic();
+}
+
+// ── AssemblyAI streaming engine ────────────────────────────────
+const AAIKEY = '2ddacb5131674223a71b4c0658d23c8f';
+let aaiSocket = null;
+let audioContext = null;
+let mediaStream = null;
+let processorNode = null;
+
+// AssemblyAI requires 16kHz mono PCM audio sent as base64
+// We capture via Web Audio API, downsample, and stream over WebSocket
+async function startListeningMic() {
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: {
+      sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true
+    }});
+  } catch(err) {
+    document.getElementById('unsupported-msg').style.display = 'block';
+    document.getElementById('unsupported-msg').innerHTML =
+      '🎙️ Microphone access denied. Please allow mic access and try again. Make sure you\'re on an https:// link.';
+    return;
+  }
+
+  // Connect directly to AssemblyAI real-time streaming
+  // Using the correct endpoint with API key in header
+  const wsUrl = `wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000`;
+  aaiSocket = new WebSocket(wsUrl);
+
+  aaiSocket.onopen = () => {
+    // Send auth message immediately on open
+    aaiSocket.send(JSON.stringify({ 
+      api_key: AAIKEY
+    }));
+    document.getElementById('listen-status').textContent = 'Listening to Noa…';
+  };
+
+  aaiSocket.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    handleAAIMessage(data);
+  };
+
+  aaiSocket.onerror = (err) => {
+    console.error('AssemblyAI WS error:', err);
+    // Graceful fallback message
+    document.getElementById('listen-status').textContent = 'Connection issue — retrying…';
+    setTimeout(() => { if (isListening) startListeningMic(); }, 2000);
+  };
+
+  aaiSocket.onclose = () => {
+    if (isListening) {
+      // Auto-reconnect
+      setTimeout(() => { if (isListening) startListeningMic(); }, 1000);
+    }
+  };
+
+  // Step 3: set up Web Audio pipeline to capture + stream PCM
+  audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+  const source = audioContext.createMediaStreamSource(mediaStream);
+
+  // ScriptProcessorNode captures raw PCM frames
+  processorNode = audioContext.createScriptProcessor(4096, 1, 1);
+  processorNode.onaudioprocess = (e) => {
+    if (aaiSocket?.readyState !== WebSocket.OPEN) return;
+    const float32 = e.inputBuffer.getChannelData(0);
+    // Convert Float32 PCM → Int16 PCM → base64
+    const int16 = new Int16Array(float32.length);
+    for (let i = 0; i < float32.length; i++) {
+      int16[i] = Math.max(-32768, Math.min(32767, float32[i] * 32768));
+    }
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(int16.buffer)));
+    aaiSocket.send(JSON.stringify({ audio_data: base64 }));
+    // Animate waveform from real audio levels
+    const rms = Math.sqrt(float32.reduce((s, v) => s + v*v, 0) / float32.length);
+    animateWaveFromLevel(rms);
+  };
+
+  source.connect(processorNode);
+  processorNode.connect(audioContext.destination);
+
+  isListening = true;
+  document.getElementById('pulse-wrap').classList.add('listening');
+  document.getElementById('listen-status').textContent = 'Listening to Noa…';
+  document.getElementById('listen-sub').textContent = 'Reading aloud — the app will step in if she needs help.';
+  document.getElementById('ctrl-btn').textContent = '⏹ Stop listening';
+  document.getElementById('ctrl-btn').className = 'ctrl-btn ctrl-stop';
+  document.getElementById('waveform').classList.add('active');
+  startTimer();
+}
+
+// ── Handle AssemblyAI real-time messages ───────────────────────
+let aaiPartialWords = [];  // accumulate partial results
+let aaiSilenceTimer = null;
+
+function handleAAIMessage(data) {
+  const now = Date.now();
+
+  if (data.message_type === 'PartialTranscript') {
+    // Partial — show in transcript box as interim
+    if (data.text) {
+      renderTranscriptWithInterim(transcript, data.text);
+      lastSpeechTime = now;
+      // Track interim for hesitation detection
+      interimHistory.push({ text: data.text, ts: now, words: data.words || [] });
+    }
+    // Reset silence timer
+    clearTimeout(aaiSilenceTimer);
+    aaiSilenceTimer = setTimeout(() => {
+      rawEvents.push({ type: 'long-silence', ms: 3000, context: data.text || '', ts: now });
+    }, 3000);
+
+  } else if (data.message_type === 'FinalTranscript') {
+    clearTimeout(aaiSilenceTimer);
+    if (!data.text || !data.words?.length) return;
+
+    const pauseMs = lastSpeechTime ? now - lastSpeechTime : 0;
+    lastSpeechTime = now;
+
+    // AssemblyAI gives us word-level data with confidence scores
+    const words = data.words; // [{text, start, end, confidence}]
+    const wordTexts = words.map(w => w.text);
+
+    // ── Real word-level confidence detection ──────────────────
+    // Low confidence = likely mispronunciation or disfluency
+    const lowConfWords = words.filter(w => w.confidence < 0.75);
+
+    // ── Detect repetitions using word timestamps ───────────────
+    const repetitions = detectRepetitions(wordTexts);
+
+    // ── Detect hesitation fillers ──────────────────────────────
+    const fillers = detectFillers(interimHistory);
+
+    // ── Self-corrections from interim vs final ─────────────────
+    const selfCorrections = detectSelfCorrections(interimHistory, data.text);
+
+    // ── Substitution detection against book text ───────────────
+    const substitutions = detectSubstitutions(wordTexts);
+
+    // ── Detect gaps between words (hesitations mid-utterance) ──
+    const wordGaps = [];
+    for (let i = 1; i < words.length; i++) {
+      const gap = words[i].start - words[i-1].end;
+      if (gap > 600) { // >600ms gap between words = hesitation
+        wordGaps.push({ before: words[i-1].text, after: words[i].text, ms: gap });
+      }
+    }
+
+    // Build diagnostic event with real confidence data
+    const diagEvent = {
+      type: 'final',
+      text: data.text,
+      words: wordTexts,
+      wordData: words,
+      confidence: data.confidence || 1,
+      lowConfWords,
+      interimHistory: [...interimHistory],
+      repetitions,
+      selfCorrections,
+      substitutions,
+      fillers,
+      wordGaps,
+      pauseBefore: pauseMs,
+      ts: now
+    };
+    rawEvents.push(diagEvent);
+
+    // Add to transcript
+    transcript.push(...wordTexts);
+    renderTranscript(transcript);
+
+    // Advance book position
+    wordBookIndex = advanceBookPosition(wordTexts, wordBookIndex);
+
+    // Schedule analysis
+    scheduleAnalysis(diagEvent, data.text);
+
+    // Reset interim
+    interimHistory = [];
+    interimBuffer = '';
+  }
+}
+
+// ── Waveform driven by real audio level ───────────────────────
+function animateWaveFromLevel(rms) {
+  const level = Math.min(1, rms * 8);
+  for (let i = 1; i <= 12; i++) {
+    const el = document.getElementById('wb' + i);
+    if (!el) continue;
+    const variation = 0.5 + Math.random() * 0.5;
+    el.style.height = Math.max(3, level * 28 * variation) + 'px';
+  }
+}
+
+function stopListening() {
+  isListening = false;
+
+  // Close AssemblyAI WebSocket
+  if (aaiSocket) {
+    try { aaiSocket.close(); } catch(e) {}
+    aaiSocket = null;
+  }
+
+  // Stop audio pipeline
+  if (processorNode) {
+    try { processorNode.disconnect(); } catch(e) {}
+    processorNode = null;
+  }
+  if (audioContext) {
+    try { audioContext.close(); } catch(e) {}
+    audioContext = null;
+  }
+  if (mediaStream) {
+    mediaStream.getTracks().forEach(t => t.stop());
+    mediaStream = null;
+  }
+
+  clearTimeout(analysisTimeout);
+  clearTimeout(aaiSilenceTimer);
+  clearInterval(waveInterval);
+  clearInterval(timerInterval);
+
+  document.getElementById('pulse-wrap').classList.remove('listening');
+  document.getElementById('listen-status').textContent = 'Session paused';
+  document.getElementById('listen-sub').textContent = 'Tap Start to resume listening.';
+  document.getElementById('ctrl-btn').textContent = '🎙️ Start listening';
+  document.getElementById('ctrl-btn').className = 'ctrl-btn ctrl-start';
+  document.getElementById('waveform').classList.remove('active');
+  document.getElementById('loading-row').classList.remove('active');
+}
+
+
+
+
+
+
+function endSession() {
+  stopListening();
+  // Reset transcript display
+  document.getElementById('transcript-box').innerHTML = '<span class="transcript-placeholder">Words will appear here as Noa reads aloud...</span>';
+  document.getElementById('timer-display').textContent = '0:00';
+
+  // If there's anything to summarize, generate a summary; otherwise go home
+  if (timerSecs > 30 || sessionLog.length > 0) {
+    generateSessionSummary();
+  } else {
+    doneSummary();
+  }
+
+  // Reset session state
+  const _log = [...sessionLog];
+  const _scores = [...comprehensionScores];
+  transcript = [];
+  pendingTranscript = '';
+  timerSecs = 0;
+  sessionLog = [];
+  checkpointCount = 0;
+  comprehensionScores = [];
+}
+
+function startSession() {
+  // Reset position tracking for new session
+  wordBookIndex = 0;
+  firedCheckpoints = new Set();
+  checkpointCount = 0;
+  comprehensionScores = [];
+  rawEvents = [];
+  // Update session book display from selectedBook
+  const b = selectedBook;
+  const metaBook = document.getElementById('session-book-meta');
+  if (metaBook) metaBook.textContent = `${b.emoji} ${b.title}`;
+  // Update home card
+  const homeEmoji = document.getElementById('home-book-emoji');
+  const homeTitle = document.getElementById('home-book-title');
+  const homeAuthor = document.getElementById('home-book-author');
+  if (homeEmoji) homeEmoji.textContent = b.emoji;
+  if (homeTitle) homeTitle.textContent = b.title;
+  if (homeAuthor) homeAuthor.textContent = `${b.author} · Level ${b.level} · Ages ${b.ages}`;
+  switchTab('session');
+}
+
+// ── Timer ──────────────────────────────────────────────────────
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerSecs++;
+    document.getElementById('timer-display').textContent = formatTime(timerSecs);
+  }, 1000);
+}
+
+function formatTime(s) {
+  return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+}
+
+// ── Waveform animation ─────────────────────────────────────────
+function animateWave() {
+  clearInterval(waveInterval);
+  waveInterval = setInterval(() => {
+    for (let i = 1; i <= 12; i++) {
+      const el = document.getElementById('wb' + i);
+      if (el) el.style.height = (4 + Math.random() * 28) + 'px';
+    }
+  }, 120);
+}
+
+// ── Comprehension checkpoint state ─────────────────────────────
+let currentCheckpoint = null;
+let checkpointCount = 0;
+let comprehensionScores = [];
+
+// ── Manual checkpoint trigger (💬 button) ──────────────────────
+// Uses the current spread position to pick the right question
+function triggerCheckpoint() {
+  const wasListening = isListening;
+  if (wasListening) pauseListeningForCheckpoint();
+
+  // Find the spread Noa is currently in
+  const currentSpread = SPREAD_BOUNDARIES.find(b => wordBookIndex >= b.start && wordBookIndex <= b.end)
+    || SPREAD_BOUNDARIES[SPREAD_BOUNDARIES.length - 1];
+
+  document.getElementById('cp-overlay').classList.add('open');
+  document.getElementById('cp-loading').classList.add('active');
+  document.getElementById('cp-question-box').style.display = 'none';
+  document.getElementById('cp-answer-area').style.display = 'none';
+  document.getElementById('cp-feedback-box').classList.remove('visible');
+  document.getElementById('cp-followup-box').classList.remove('visible');
+  document.getElementById('cp-done-btn').classList.remove('visible');
+  document.getElementById('cp-header-sub').textContent = 'Generating question…';
+
+  generateCheckpointQuestion(wasListening, currentSpread?.id);
+}
+
+function pauseListeningForCheckpoint() {
+  if (recognition) { try { recognition.stop(); } catch(e) {} }
+  clearTimeout(analysisTimeout);
+}
+
+function resumeListeningAfterCheckpoint() {
+  if (isListening && !aaiSocket) {
+    startListeningMic();
+  }
+}
+
+// ── Generate checkpoint question via Claude ────────────────────
+// spreadId tells Claude exactly which story moment we're at
+async function generateCheckpointQuestion(resumeAfter, spreadId) {
+  const context = transcript.slice(-80).join(' ');
+
+  // Get the pre-mapped checkpoint for this spread if it exists
+  const bookCP = spreadId && BOOK.checkpoints[spreadId]
+    ? BOOK.checkpoints[spreadId]
+    : Object.values(BOOK.checkpoints)[checkpointCount % Math.max(Object.keys(BOOK.checkpoints).length, 1)];
+
+  const suggestedType = bookCP?.type || 'inference';
+  const suggestedQ = bookCP?.q || null;
+
+  // Build story-moment context so Claude knows exactly where in the book we are
+  const spread = (BOOK.spreads || []).find(s => s.id === spreadId);
+  const spreadContext = spread
+    ? `Noa just finished reading spread ${spreadId}: "${spread.text}"`
+    : `Noa is reading ${BOOK.title}`;
+
+  // Story so far — everything up to current spread
+  const storyProgress = (BOOK.spreads || [])
+    .filter(s => s.id <= (spreadId || 10))
+    .map(s => s.text)
+    .join(' ');
+
+  const sysP = `You are a Science of Reading comprehension checkpoint engine for a parent-child shared reading app.
+
+The child (Noa, age 7, Grade 2) is reading "${BOOK.title}" by ${BOOK.author}.
+Themes: ${(BOOK.themes || []).join(', ')}.
+Key vocabulary: ${(BOOK.vocabulary || []).join(', ')}.
+
+Story so far: "${storyProgress}"
+
+CURRENT POSITION: ${spreadContext}
+
+Generate ONE comprehension question grounded in THIS exact story moment. Type: ${suggestedType}.
+${suggestedQ ? `Base it closely on: "${suggestedQ}"` : ''}
+
+The question must be answerable from what Noa has already read — not from what comes later.
+
+Return ONLY valid JSON — no markdown:
+{
+  "questionType": "${suggestedType}",
+  "typeEmoji": "one emoji",
+  "question": "Exact warm conversational question for the parent to ask Noa aloud, grounded in this specific moment",
+  "answers": [
+    { "text": "Correct answer rooted in the text", "isCorrect": true, "feedback": "1-2 sentences: what this reveals about Noa's comprehension of THIS moment", "followUp": "" },
+    { "text": "Plausible wrong answer reflecting a comprehension gap", "isCorrect": false, "feedback": "What this gap reveals, stated constructively", "followUp": "Scaffolding prompt the parent can say right now" },
+    { "text": "Another plausible wrong answer or 'I don't know'", "isCorrect": false, "feedback": "What this reveals", "followUp": "Gentle re-engagement prompt" }
+  ]
+}
+
+Wrong answers must reflect real comprehension gaps a 7-year-old would have at this exact moment — literal thinking over inferential, missing emotional subtext, confusion about cause and effect.`;
+
+  const userP = `${spreadContext}
+What Noa said aloud just before this checkpoint: "${context || 'beginning of the book'}"
+Generate the ${suggestedType} checkpoint question for this exact moment.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: sysP,
+        messages: [{ role: 'user', content: userP }]
+      })
+    });
+    const data = await response.json();
+    document.getElementById('cp-loading').classList.remove('active');
+    if (data.content && data.content[0]) {
+      let raw = data.content[0].text.trim().replace(/```json|```/g, '').trim();
+      const cp = JSON.parse(raw);
+      currentCheckpoint = cp;
+      currentCheckpoint.resumeAfter = resumeAfter;
+      renderCheckpoint(cp);
+      checkpointCount++;
+    }
+  } catch (err) {
+    document.getElementById('cp-loading').classList.remove('active');
+    console.error('Checkpoint error:', err);
+    currentCheckpoint = getFallbackCheckpoint(resumeAfter, spreadId);
+    renderCheckpoint(currentCheckpoint);
+    checkpointCount++;
+  }
+}
+
+function getFallbackCheckpoint(resumeAfter, spreadId) {
+  return {
+    questionType: 'inference',
+    typeEmoji: '🔍',
+    resumeAfter,
+    question: "Why do you think Gerald felt sad when the other animals laughed at him?",
+    answers: [
+      { text: "Because it hurts when people make fun of you", isCorrect: true, feedback: "Strong emotional inference — Noa connected the animals’ laughter to Gerald’s feelings without it being stated directly.", followUp: "" },
+      { text: "He didn’t like dancing anyway", isCorrect: false, feedback: "Noa may not yet be connecting the animals’ reaction to Gerald’s internal experience — a good moment to probe further.", followUp: '"What did the other animals say about Gerald? How do you think he felt when they said that?"' },
+      { text: "He was tired from walking", isCorrect: false, feedback: "Noa needs more support connecting story events to character feelings.", followUp: '"Let\'s look back at that part — the animals laughed at Gerald. What does it feel like when someone laughs at you?"' }
+    ]
+  };
+}
+
+// ── Render checkpoint question into sheet ──────────────────────
+function renderCheckpoint(cp) {
+  const typeLabels = {
+    'inference': 'Inference',
+    'character motivation': 'Character motivation',
+    'vocabulary in context': 'Vocabulary',
+    'causal reasoning': 'Cause & effect',
+    'prediction': 'Prediction',
+    'retell': 'Retell',
+    'story grammar': 'Story structure'
+  };
+
+  document.getElementById('cp-type-icon').textContent = cp.typeEmoji || '💬';
+  document.getElementById('cp-header-title').textContent = 'Comprehension checkpoint';
+  document.getElementById('cp-header-sub').textContent =
+    (typeLabels[cp.questionType] || cp.questionType) + ' · pause and ask Noa';
+
+  document.getElementById('cp-question-text').textContent = cp.question;
+  document.getElementById('cp-question-box').style.display = 'block';
+
+  // Shuffle answers so correct isn't always first
+  const shuffled = [...cp.answers].sort(() => Math.random() - 0.5);
+
+  const container = document.getElementById('cp-options');
+  container.innerHTML = '';
+  shuffled.forEach(ans => {
+    const btn = document.createElement('button');
+    btn.className = 'cp-option';
+    btn.textContent = ans.text;
+    btn.onclick = () => selectAnswer(ans, btn);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('cp-answer-area').style.display = 'block';
+}
+
+// ── Handle answer selection ────────────────────────────────────
+function selectAnswer(answer, btn) {
+  // Disable all options
+  document.querySelectorAll('.cp-option').forEach(b => {
+    b.onclick = null;
+    b.style.opacity = b === btn ? '1' : '0.45';
+  });
+
+  // Mark correct/incorrect
+  btn.classList.add(answer.isCorrect ? 'correct' : 'incorrect');
+
+  // If wrong, reveal which was correct
+  if (!answer.isCorrect) {
+    document.querySelectorAll('.cp-option').forEach(b => {
+      const txt = b.textContent;
+      const matchingAnswer = currentCheckpoint.answers.find(a => a.text === txt && a.isCorrect);
+      if (matchingAnswer) { b.classList.add('correct'); b.style.opacity = '1'; }
+    });
+  }
+
+  // Log to comprehension score
+  comprehensionScores.push(answer.isCorrect);
+  updateComprehensionProfile(answer.isCorrect);
+  logEvent('comprehension', currentCheckpoint.questionType, answer.isCorrect ? 'Correct' : 'Needs support');
+
+  // Show feedback
+  const fbBox = document.getElementById('cp-feedback-box');
+  fbBox.className = 'cp-feedback-box visible ' + (answer.isCorrect ? 'strong' : 'developing');
+  document.getElementById('cp-feedback-title').textContent = answer.isCorrect ? '✓ Strong answer' : '↗ Developing';
+  document.getElementById('cp-feedback-text').textContent = answer.feedback;
+
+  // Show follow-up if there is one
+  if (answer.followUp) {
+    document.getElementById('cp-followup-text').textContent = answer.followUp;
+    document.getElementById('cp-followup-box').classList.add('visible');
+  }
+
+  // Show done button
+  document.getElementById('cp-done-btn').classList.add('visible');
+}
+
+// ── Dismiss checkpoint ─────────────────────────────────────────
+function dismissCheckpoint() {
+  document.getElementById('cp-overlay').classList.remove('open');
+  if (currentCheckpoint?.resumeAfter) {
+    resumeListeningAfterCheckpoint();
+  }
+  currentCheckpoint = null;
+}
+
+function closeCpOnBackdrop(e) {
+  if (e.target === document.getElementById('cp-overlay')) {
+    dismissCheckpoint();
+  }
+}
+
+// ── Update comprehension profile bar ──────────────────────────
+function updateComprehensionProfile(correct) {
+  const el = document.getElementById('pct-comprehension');
+  const bar = document.querySelector('#screen-profile .skill-fill[style*="7F77DD"]');
+  if (!el) return;
+  const current = parseInt(el.textContent);
+  const delta = correct ? 3 : -2;
+  const next = Math.min(100, Math.max(10, current + delta));
+  el.textContent = next + '%';
+  if (bar) bar.style.width = next + '%';
+
+  // Update session insight
+  const total = comprehensionScores.length;
+  const correct_count = comprehensionScores.filter(Boolean).length;
+  const pct = Math.round((correct_count / total) * 100);
+  document.getElementById('session-insight-text').textContent =
+    `${total} comprehension checkpoint${total > 1 ? 's' : ''} this session — ${pct}% accurate.`;
+  document.getElementById('session-insights').style.display = 'flex';
+}
+
+// auto-checkpoint is now called inside analyzeWithClaude directly
+</script>
+</body>
+</html>
