@@ -2208,16 +2208,20 @@ async function startListeningMic() {
     return;
   }
 
-  // Connect to AssemblyAI v3 streaming endpoint
-  const wsUrl = `wss://streaming.assemblyai.com/v3/ws?sample_rate=16000&encoding=pcm_s16le`;
+  // v3 API: pass API key as token in URL, plus keyterms for the book's tricky words
+  const keyterms = (BOOK.vocabulary || []).slice(0, 20).join(',');
+  const wsUrl = `wss://streaming.assemblyai.com/v3/ws?sample_rate=16000&encoding=pcm_s16le&token=${AAIKEY}`;
   aaiSocket = new WebSocket(wsUrl);
 
   aaiSocket.onopen = () => {
-    // v3 auth: send API key as Authorization in the first message
-    aaiSocket.send(JSON.stringify({ 
-      authorization: AAIKEY
-    }));
     document.getElementById('listen-status').textContent = 'Listening to Noa…';
+    // Optionally inject book vocabulary as keyterms to improve accuracy
+    if (BOOK.vocabulary?.length > 0) {
+      aaiSocket.send(JSON.stringify({
+        type: 'UpdateConfiguration',
+        keyterms: (BOOK.vocabulary || []).slice(0, 20)
+      }));
+    }
   };
 
   aaiSocket.onmessage = (msg) => {
@@ -2281,21 +2285,21 @@ function handleAAIMessage(data) {
   const now = Date.now();
 
   // v3 uses message_type: "Begin", "Turn", "Termination"
-  if (data.message_type === 'Begin' || data.type === 'session_begins') {
+  if (data.type === 'Begin') {
     document.getElementById('listen-status').textContent = 'Listening to Noa…';
     return;
   }
 
   // v3 Turn event — contains partial and final transcripts
-  if (data.message_type === 'Turn' || data.type === 'turn') {
+  if (data.type === 'Turn') {
     const text = data.transcript || data.text || '';
     const words = data.words || [];
-    const isFinal = !data.turn_is_formatted === false || data.end_of_turn || words.length > 0;
+    const isFinal = data.end_of_turn === true;
 
     if (!text) return;
     lastSpeechTime = now;
 
-    if (!isFinal || data.turn_is_formatted === false) {
+    if (!isFinal) {
       // Partial
       renderTranscriptWithInterim(transcript, text);
       interimHistory.push({ text, ts: now, words });
