@@ -2208,15 +2208,14 @@ async function startListeningMic() {
     return;
   }
 
-  // Connect directly to AssemblyAI real-time streaming
-  // Using the correct endpoint with API key in header
-  const wsUrl = `wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000`;
+  // Connect to AssemblyAI v3 streaming endpoint
+  const wsUrl = `wss://streaming.assemblyai.com/v3/ws?sample_rate=16000&encoding=pcm_s16le`;
   aaiSocket = new WebSocket(wsUrl);
 
   aaiSocket.onopen = () => {
-    // Send auth message immediately on open
+    // v3 auth: send API key as Authorization in the first message
     aaiSocket.send(JSON.stringify({ 
-      api_key: AAIKEY
+      authorization: AAIKEY
     }));
     document.getElementById('listen-status').textContent = 'Listening to Noa…';
   };
@@ -2249,13 +2248,13 @@ async function startListeningMic() {
   processorNode.onaudioprocess = (e) => {
     if (aaiSocket?.readyState !== WebSocket.OPEN) return;
     const float32 = e.inputBuffer.getChannelData(0);
-    // Convert Float32 PCM → Int16 PCM → base64
+    // Convert Float32 PCM → Int16 PCM
     const int16 = new Int16Array(float32.length);
     for (let i = 0; i < float32.length; i++) {
       int16[i] = Math.max(-32768, Math.min(32767, float32[i] * 32768));
     }
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(int16.buffer)));
-    aaiSocket.send(JSON.stringify({ audio_data: base64 }));
+    // v3 accepts raw binary audio data
+    aaiSocket.send(int16.buffer);
     // Animate waveform from real audio levels
     const rms = Math.sqrt(float32.reduce((s, v) => s + v*v, 0) / float32.length);
     animateWaveFromLevel(rms);
@@ -2281,86 +2280,98 @@ let aaiSilenceTimer = null;
 function handleAAIMessage(data) {
   const now = Date.now();
 
+  // v3 uses message_type: "Begin", "Turn", "Termination"
+  if (data.message_type === 'Begin' || data.type === 'session_begins') {
+    document.getElementById('listen-status').textContent = 'Listening to Noa…';
+    return;
+  }
+
+  // v3 Turn event — contains partial and final transcripts
+  if (data.message_type === 'Turn' || data.type === 'turn') {
+    const text = data.transcript || data.text || '';
+    const words = data.words || [];
+    const isFinal = !data.turn_is_formatted === false || data.end_of_turn || words.length > 0;
+
+    if (!text) return;
+    lastSpeechTime = now;
+
+    if (!isFinal || data.turn_is_formatted === false) {
+      // Partial
+      renderTranscriptWithInterim(transcript, text);
+      interimHistory.push({ text, ts: now, words });
+      clearTimeout(aaiSilenceTimer);
+      aaiSilenceTimer = setTimeout(() => {
+        rawEvents.push({ type: 'long-silence', ms: 3000, context: text, ts: now });
+      }, 3000);
+    } else {
+      // Final turn
+      clearTimeout(aaiSilenceTimer);
+      const wordTexts = words.length > 0 ? words.map(w => w.text || w) : text.split(' ').filter(Boolean);
+      const pauseMs = lastSpeechTime ? now - lastSpeechTime : 0;
+      const lowConfWords = words.filter(w => w.confidence != null && w.confidence < 0.75);
+      const repetitions = detectRepetitions(wordTexts);
+      const fillers = detectFillers(interimHistory);
+      const selfCorrections = detectSelfCorrections(interimHistory, text);
+      const substitutions = detectSubstitutions(wordTexts);
+      const wordGaps = [];
+      for (let i = 1; i < words.length; i++) {
+        const gap = (words[i].start || 0) - (words[i-1].end || 0);
+        if (gap > 600) wordGaps.push({ before: words[i-1].text, after: words[i].text, ms: gap });
+      }
+      const diagEvent = {
+        type: 'final', text, words: wordTexts, wordData: words,
+        confidence: 1, lowConfWords, interimHistory: [...interimHistory],
+        repetitions, selfCorrections, substitutions, fillers, wordGaps, pauseBefore: pauseMs, ts: now
+      };
+      rawEvents.push(diagEvent);
+      transcript.push(...wordTexts);
+      renderTranscript(transcript);
+      wordBookIndex = advanceBookPosition(wordTexts, wordBookIndex);
+      scheduleAnalysis(diagEvent, text);
+      interimHistory = [];
+      interimBuffer = '';
+    }
+    return;
+  }
+
+  // v2 fallback format still supported
   if (data.message_type === 'PartialTranscript') {
-    // Partial — show in transcript box as interim
     if (data.text) {
       renderTranscriptWithInterim(transcript, data.text);
       lastSpeechTime = now;
-      // Track interim for hesitation detection
       interimHistory.push({ text: data.text, ts: now, words: data.words || [] });
     }
-    // Reset silence timer
     clearTimeout(aaiSilenceTimer);
     aaiSilenceTimer = setTimeout(() => {
       rawEvents.push({ type: 'long-silence', ms: 3000, context: data.text || '', ts: now });
     }, 3000);
-
   } else if (data.message_type === 'FinalTranscript') {
     clearTimeout(aaiSilenceTimer);
     if (!data.text || !data.words?.length) return;
-
     const pauseMs = lastSpeechTime ? now - lastSpeechTime : 0;
     lastSpeechTime = now;
-
-    // AssemblyAI gives us word-level data with confidence scores
-    const words = data.words; // [{text, start, end, confidence}]
+    const words = data.words;
     const wordTexts = words.map(w => w.text);
-
-    // ── Real word-level confidence detection ──────────────────
-    // Low confidence = likely mispronunciation or disfluency
     const lowConfWords = words.filter(w => w.confidence < 0.75);
-
-    // ── Detect repetitions using word timestamps ───────────────
     const repetitions = detectRepetitions(wordTexts);
-
-    // ── Detect hesitation fillers ──────────────────────────────
     const fillers = detectFillers(interimHistory);
-
-    // ── Self-corrections from interim vs final ─────────────────
     const selfCorrections = detectSelfCorrections(interimHistory, data.text);
-
-    // ── Substitution detection against book text ───────────────
     const substitutions = detectSubstitutions(wordTexts);
-
-    // ── Detect gaps between words (hesitations mid-utterance) ──
     const wordGaps = [];
     for (let i = 1; i < words.length; i++) {
       const gap = words[i].start - words[i-1].end;
-      if (gap > 600) { // >600ms gap between words = hesitation
-        wordGaps.push({ before: words[i-1].text, after: words[i].text, ms: gap });
-      }
+      if (gap > 600) wordGaps.push({ before: words[i-1].text, after: words[i].text, ms: gap });
     }
-
-    // Build diagnostic event with real confidence data
     const diagEvent = {
-      type: 'final',
-      text: data.text,
-      words: wordTexts,
-      wordData: words,
-      confidence: data.confidence || 1,
-      lowConfWords,
-      interimHistory: [...interimHistory],
-      repetitions,
-      selfCorrections,
-      substitutions,
-      fillers,
-      wordGaps,
-      pauseBefore: pauseMs,
-      ts: now
+      type: 'final', text: data.text, words: wordTexts, wordData: words,
+      confidence: data.confidence || 1, lowConfWords, interimHistory: [...interimHistory],
+      repetitions, selfCorrections, substitutions, fillers, wordGaps, pauseBefore: pauseMs, ts: now
     };
     rawEvents.push(diagEvent);
-
-    // Add to transcript
     transcript.push(...wordTexts);
     renderTranscript(transcript);
-
-    // Advance book position
     wordBookIndex = advanceBookPosition(wordTexts, wordBookIndex);
-
-    // Schedule analysis
     scheduleAnalysis(diagEvent, data.text);
-
-    // Reset interim
     interimHistory = [];
     interimBuffer = '';
   }
